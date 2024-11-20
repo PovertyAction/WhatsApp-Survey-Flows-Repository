@@ -1,0 +1,347 @@
+{
+  "description": "A New Flow",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "next": "incoming",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "incoming",
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "next": "rifa_1",
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "incoming",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -310,
+          "y": 200
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Este canal de comunicación no está habilitado para la recepción de mensajes.\n\nSoy un robot y no logro entender lo que me dices."
+      }
+    },
+    {
+      "name": "rifa_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "set_reply",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 610,
+          "y": 190
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Hola, {{flow.data.name}}👋 . Somos IPA Colombia.\n\n*¡Ya tenemos los resultados de las 10 rifas de un computador personal con un valor aproximado de $1’500.000 pesos colombianos! Para conocer los resultados, mira el video  que está en el siguiente enlace: https://shorturl.at/izM18*\n\nRecuerda que este mensaje te está llegando porque completaste nuestra encuesta presencial o a través de videollamada sobre Muévete. Si deseas conocer el código con el que participaste en la rifa escribe *Sí*",
+        "timeout": "86400"
+      }
+    },
+    {
+      "name": "set_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "rifa_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reply-%} {{flow.variables.set_reply| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reply"
+          }
+        ],
+        "offset": {
+          "x": 80,
+          "y": 500
+        }
+      }
+    },
+    {
+      "name": "set_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "rifa_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_no_reply-%} {{flow.variables.set_no_reply| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 80,
+          "y": 710
+        }
+      }
+    },
+    {
+      "name": "set_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "publish",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_fail-%} {{flow.variables.set_fail| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_fail"
+          }
+        ],
+        "offset": {
+          "x": 80,
+          "y": 910
+        }
+      }
+    },
+    {
+      "name": "rifa_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "wait_1",
+          "event": "sent"
+        },
+        {
+          "next": "set_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 610,
+          "y": 440
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Recuerda que tu código es *{{flow.data.codigo}}*! Por favor tenlo muy presente porque con él sabrás si resultas ganador de las rifas."
+      }
+    },
+    {
+      "name": "wait_1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "rifa_3",
+          "event": "success"
+        },
+        {
+          "next": "rifa_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSf4174a2a71e32fc6a151f7e53758afb8",
+        "environment_sid": "ZEa6db6588d283ad2856235983038c8ae6",
+        "offset": {
+          "x": 610,
+          "y": 660
+        },
+        "function_sid": "ZHb3ed91cb2ac392d8b867b1fc11886cbe",
+        "url": "https://aleatorio-5276.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "rifa_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "wait_2",
+          "event": "sent"
+        },
+        {
+          "next": "set_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 610,
+          "y": 870
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Si no puedes ver el video o no alcanzas a ver muy bien los código de los ganadores, puedes consultar este archivo: https://shorturl.at/dqFW3"
+      }
+    },
+    {
+      "name": "wait_2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "publish",
+          "event": "success"
+        },
+        {
+          "next": "publish",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSf4174a2a71e32fc6a151f7e53758afb8",
+        "environment_sid": "ZEa6db6588d283ad2856235983038c8ae6",
+        "offset": {
+          "x": 610,
+          "y": 1080
+        },
+        "function_sid": "ZHb3ed91cb2ac392d8b867b1fc11886cbe",
+        "url": "https://aleatorio-5276.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "publish",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "cierre",
+          "event": "success"
+        },
+        {
+          "next": "cierre",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS3e1fb230d81f1c7f6ed8e5bd8c7c5fcc",
+        "environment_sid": "ZE610cdb6a22ba0e754b821468daa70175",
+        "offset": {
+          "x": 360,
+          "y": 1360
+        },
+        "function_sid": "ZH6cab701579d0ee47498f139386e798b4",
+        "parameters": [
+          {
+            "value": "{{flow.data.caseid}}",
+            "key": "caseid"
+          },
+          {
+            "value": "{{flow.data.treatment}}",
+            "key": "treatment"
+          },
+          {
+            "value": "{{flow.data.mun}}",
+            "key": "mun"
+          },
+          {
+            "value": "{{widgets.rifa_1.inbound.Body}}",
+            "key": "rifa_1"
+          },
+          {
+            "value": "{{flow.variables.set_reply}}",
+            "key": "set_reply"
+          },
+          {
+            "value": "{{flow.variables.set_no_reply}}",
+            "key": "set_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_fail}}",
+            "key": "set_fail"
+          },
+          {
+            "value": "{{flow.data.etapa}}",
+            "key": "etapa"
+          },
+          {
+            "value": "{{flow.data.codigo}}",
+            "key": "codigo"
+          },
+          {
+            "value": "{{flow.data.grupo}}",
+            "key": "grupo"
+          }
+        ],
+        "url": "https://publish-function-6341.twil.io/publish_1"
+      }
+    },
+    {
+      "name": "cierre",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 360,
+          "y": 1580
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hemos finalizado la comunicación por este canal. \n\nEsta comunicación es automática por lo que te pedimos por favor no responder a este chat."
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
