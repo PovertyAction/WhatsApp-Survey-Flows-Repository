@@ -1,0 +1,1480 @@
+{
+  "description": "etpv_no_elegible",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "next": "incoming",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "incoming",
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "next": "etpv_no_elegibles_mensaje_3",
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -130,
+          "y": -390
+        }
+      }
+    },
+    {
+      "name": "etpv_intro3_noeleg_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "etpv_intro3_split",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "etpv_intro4_noeleg_1",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 40,
+          "y": 780
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Hola {{flow.data.name}}. \n\nSomos IPA Colombia. Gracias por participar en la encuesta de registro de nuestro estudio que busca identificar qué tipos de programas mejoran la calidad de vida de los venezolanos en Colombia. \n\nDe acuerdo con los criterios del estudio, no fuiste elegible para participar.  Sin embargo, nos gustaría comunicarnos contigo nuevamente para invitarte a participar en otros estudios de IPA.  \n\n*¿Estás de acuerdo con que te contactemos para invitarte a participar en futuros proyectos?*",
+        "timeout": "77400"
+      }
+    },
+    {
+      "name": "publish_gsheets",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "end2",
+          "event": "success"
+        },
+        {
+          "next": "end2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "default",
+        "environment_sid": "",
+        "offset": {
+          "x": -950,
+          "y": 2720
+        },
+        "function_sid": "",
+        "parameters": [
+          {
+            "value": "{{widgets.etpv_no_elegibles_mensaje_3.inbound.Body}}",
+            "key": "etpv_intro1"
+          },
+          {
+            "value": "{{flow.variables.set_intro1}}",
+            "key": "set_intro1"
+          },
+          {
+            "value": "{{widgets.etpv_intro2_noeleg_1.inbound.Body}}",
+            "key": "etpv_intro2"
+          },
+          {
+            "value": "{{flow.variables.set_intro2}}",
+            "key": "set_intro2"
+          },
+          {
+            "value": "{{flow.variables.set_initial_no_reply}}",
+            "key": "set_initial_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_initial_fail}}",
+            "key": "set_initial_fail"
+          },
+          {
+            "value": "{{flow.variables.set_reply}}",
+            "key": "set_reply"
+          },
+          {
+            "value": "{{widgets.etpv_intro3_noeleg_1.inbound.Body}}",
+            "key": "etpv_intro3"
+          },
+          {
+            "value": "{{flow.variables.set_survey_no_reply}}",
+            "key": "set_survey_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_survey_fail}}",
+            "key": "set_survey_fail"
+          },
+          {
+            "value": "{{flow.data.caseid}}",
+            "key": "caseid"
+          },
+          {
+            "value": "{{flow.data.documentado}}",
+            "key": "documentado"
+          },
+          {
+            "value": "{{flow.data.ciudad}}",
+            "key": "ciudad"
+          },
+          {
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "value": "{{flow.variables.set_multierror}}",
+            "key": "set_multierror"
+          },
+          {
+            "value": "{{widgets.wa_1.inbound.Body}}",
+            "key": "wa_1"
+          },
+          {
+            "value": "{{widgets.wa_2.inbound.Body}}",
+            "key": "wa_2"
+          },
+          {
+            "value": "{{flow.data.ola}}",
+            "key": "ola"
+          },
+          {
+            "value": "{{widgets.etpv_intro4_noeleg_1.inbound.Body}}",
+            "key": "etpv_intro4"
+          }
+        ],
+        "url": "https://persimmon-zebra-6468.twil.io/flyer"
+      }
+    },
+    {
+      "name": "end2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -990,
+          "y": 3170
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hemos finalizado la comunicación por este canal. \n\nEsta encuesta es automática por lo que le pedimos no responder a este chat.\n\n*¡Gracias!, cordialmente,*\n\n*_Equipo IPA_*"
+      }
+    },
+    {
+      "name": "incoming",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1190,
+          "y": -120
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Este canal de comunicación no está habilitado para la recepción de mensajes."
+      }
+    },
+    {
+      "name": "set_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wa_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reply -%}\n{{flow.variables.set_reply | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_reply"
+          }
+        ],
+        "offset": {
+          "x": 430,
+          "y": 1650
+        }
+      }
+    },
+    {
+      "name": "set_initial_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "publish_gsheets",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_no_reply-%}\n{{flow.variables.set_initial_no_reply| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 2250,
+          "y": 320
+        }
+      }
+    },
+    {
+      "name": "set_initial_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "publish_gsheets",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_fail-%}\n{{flow.variables.set_initial_fail| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_fail"
+          }
+        ],
+        "offset": {
+          "x": 2250,
+          "y": 550
+        }
+      }
+    },
+    {
+      "name": "etpv_intro3_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_intro3",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reply",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Si",
+              "arguments": [
+                "{{widgets.etpv_intro3_noeleg_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,1 , 1,1.,SI,si,sí,SÍ"
+            }
+          ]
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "no",
+              "arguments": [
+                "{{widgets.etpv_intro3_noeleg_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "2, 2,2 ,2., NO,No,no"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.etpv_intro3_noeleg_1.inbound.Body}}",
+        "offset": {
+          "x": 640,
+          "y": 780
+        }
+      }
+    },
+    {
+      "name": "fail_intro3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "etpv_intro3_noeleg_1",
+          "event": "sent"
+        },
+        {
+          "next": "etpv_intro3_noeleg_1",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -370,
+          "y": 770
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "end1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "publish_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "publish_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -890,
+          "y": 2490
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Muchas gracias por responder. Que estés muy bien."
+      }
+    },
+    {
+      "name": "etpv_no_elegibles_mensaje_3",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "etpv_intro2_noeleg_1",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 120,
+          "y": -130
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Hola {{flow.data.name}}. \n\nSomos IPA Colombia. Gracias por participar en la encuesta de registro de nuestro estudio que busca identificar qué tipos de programas mejoran la calidad de vida de los venezolanos en Colombia. \n\nDe acuerdo con los criterios del estudio, no fuiste elegible para participar.  Sin embargo, nos gustaría comunicarnos contigo nuevamente para invitarte a participar en otros estudios de IPA.  \n\n*¿Estás de acuerdo con que te contactemos para invitarte a participar en futuros proyectos?*",
+        "timeout": "59400"
+      }
+    },
+    {
+      "name": "etpv_intro1_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_intro1",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reply",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "SI",
+              "arguments": [
+                "{{widgets.etpv_no_elegibles_mensaje_3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "SI,Si,Sí,SÍ,si,sí,SI"
+            }
+          ]
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "NO",
+              "arguments": [
+                "{{widgets.etpv_no_elegibles_mensaje_3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "No,NO,NO, no., NO,no,NO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.etpv_no_elegibles_mensaje_3.inbound.Body}}",
+        "offset": {
+          "x": -160,
+          "y": 390
+        }
+      }
+    },
+    {
+      "name": "send_message_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait_a2",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait_a2",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1260,
+          "y": 380
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo su respuesta.\nRecuerde que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas. \nPor favor responda únicamente con la palabra *Sí* o *No*"
+      }
+    },
+    {
+      "name": "funcion_wait_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "etpv_intro1_split",
+          "event": "success"
+        },
+        {
+          "next": "etpv_intro1_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -210,
+          "y": 100
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "set_intro1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_intro1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro1 -%}\n{{flow.variables.set_intro1 | plus: 1}}\n{%- else -%}\n 1\n{%- endif -%}",
+            "key": "set_intro1"
+          }
+        ],
+        "offset": {
+          "x": -550,
+          "y": 380
+        }
+      }
+    },
+    {
+      "name": "split_count_intro1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "send_message_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "multierror_intro",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">5",
+              "arguments": [
+                "{{flow.variables.set_intro1}}"
+              ],
+              "type": "greater_than",
+              "value": "5"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_intro1}}",
+        "offset": {
+          "x": -910,
+          "y": 380
+        }
+      }
+    },
+    {
+      "name": "multierror_intro",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "set_multierror",
+          "event": "sent"
+        },
+        {
+          "next": "set_multierror",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1810,
+          "y": 870
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Parece que no ha podido responder en una forma en que el sistema entienda su respuesta. Nos estaremos comunicando con usted nuevamente \n\n*Esta encuesta será cerrada en este momento.*"
+      }
+    },
+    {
+      "name": "etpv_intro2_noeleg_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait_b",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "etpv_intro3_noeleg_1",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 550,
+          "y": -110
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Hola {{flow.data.name}}. \n\nSomos IPA Colombia. Gracias por participar en la encuesta de registro de nuestro estudio que busca identificar qué tipos de programas mejoran la calidad de vida de los venezolanos en Colombia. \n\nDe acuerdo con los criterios del estudio, no fuiste elegible para participar.  Sin embargo, nos gustaría comunicarnos contigo nuevamente para invitarte a participar en otros estudios de IPA.  \n\n*¿Estás de acuerdo con que te contactemos para invitarte a participar en futuros proyectos?*",
+        "timeout": "86400"
+      }
+    },
+    {
+      "name": "funcion_wait_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "etpv_intro2_split",
+          "event": "success"
+        },
+        {
+          "next": "etpv_intro2_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 560,
+          "y": 110
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "etpv_intro2_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_intro2",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reply",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "SI",
+              "arguments": [
+                "{{widgets.etpv_intro2_noeleg_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "SI,Si,Sí,SÍ,si,sí,SI"
+            }
+          ]
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "NO",
+              "arguments": [
+                "{{widgets.etpv_intro2_noeleg_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "No,NO,NO, no., NO,no,NO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.etpv_intro2_noeleg_1.inbound.Body}}",
+        "offset": {
+          "x": 560,
+          "y": 360
+        }
+      }
+    },
+    {
+      "name": "set_intro2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_intro2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro2 -%}\n{{flow.variables.set_intro2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_intro2"
+          }
+        ],
+        "offset": {
+          "x": 920,
+          "y": 360
+        }
+      }
+    },
+    {
+      "name": "split_count_intro2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "send_message_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "multierror_intro",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_intro2}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_intro2}}",
+        "offset": {
+          "x": 1280,
+          "y": 370
+        }
+      }
+    },
+    {
+      "name": "send_message_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "etpv_intro2_noeleg_1",
+          "event": "sent"
+        },
+        {
+          "next": "etpv_intro2_noeleg_1",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": 370
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo su respuesta.\nRecuerde que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas. \nPor favor responda únicamente con la palabra *Sí* o *No*"
+      }
+    },
+    {
+      "name": "set_survey_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "fail_message",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_survey_fail-%}\n{{flow.variables.set_survey_fail| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_survey_fail"
+          }
+        ],
+        "offset": {
+          "x": 1540,
+          "y": 1150
+        }
+      }
+    },
+    {
+      "name": "fail_message",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "publish_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "publish_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1560,
+          "y": 1350
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Lo sentimos, un error inesperado hace que no podamos seguir con la encuesta. Nos estaremos comunicando con usted en las próximas semanas."
+      }
+    },
+    {
+      "name": "funcion_wait_a2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "etpv_no_elegibles_mensaje_3",
+          "event": "success"
+        },
+        {
+          "next": "etpv_no_elegibles_mensaje_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -580,
+          "y": 120
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "set_multierror",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "publish_gsheets",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_multierror -%}\n{{flow.variables.set_multierror| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_multierror"
+          }
+        ],
+        "offset": {
+          "x": -1820,
+          "y": 1110
+        }
+      }
+    },
+    {
+      "name": "wa_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "function_wait1",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -880,
+          "y": 1950
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Este es el teléfono de WhatsApp que tenemos registrado: {{flow.data.num_wa}}. \n\n¿Quieres actualizar el número de WhatsApp al que te contactaremos?\n\n*1*. SI\n*2*. NO",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "function_wait1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_wa1",
+          "event": "success"
+        },
+        {
+          "next": "split_wa1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -520,
+          "y": 1950
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "split_wa1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_wa1",
+          "event": "noMatch"
+        },
+        {
+          "next": "wa_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "SI",
+              "arguments": [
+                "{{widgets.wa_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "SI,si, si,si , SI,SI ,SI.,si.,1,1 , 1,1."
+            }
+          ]
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "NO",
+              "arguments": [
+                "{{widgets.wa_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "NO, NO,NO ,no,no , no,NO.,no.,2,2 , 2,2."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.wa_1.inbound.Body}}",
+        "offset": {
+          "x": -190,
+          "y": 1950
+        }
+      }
+    },
+    {
+      "name": "split_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_wa1",
+          "event": "noMatch"
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_wa1}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_wa1}}",
+        "offset": {
+          "x": 500,
+          "y": 1950
+        }
+      }
+    },
+    {
+      "name": "set_wa1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_wa1 -%}\n{{flow.variables.set_wa1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_wa1"
+          }
+        ],
+        "offset": {
+          "x": 180,
+          "y": 1950
+        }
+      }
+    },
+    {
+      "name": "fail_wa1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "function_2",
+          "event": "sent"
+        },
+        {
+          "next": "function_2",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 840,
+          "y": 1950
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender su respuesta, recuerde enviar únicamente el *número* que se relaciona a su respuesta.  \n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "function_2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "wa_1",
+          "event": "success"
+        },
+        {
+          "next": "wa_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1180,
+          "y": 1950
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "wa_2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "function_wait2",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -890,
+          "y": 2220
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Escribe el número de WhatsApp que desear registrar:\n\nPor favor escribe el número *completo sin espacios*, *sin indicativos*, este debe tener 10 dígitos",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "function_wait2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_wa2",
+          "event": "success"
+        },
+        {
+          "next": "split_wa2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -550,
+          "y": 2220
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "split_wa2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_wa2",
+          "event": "noMatch"
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Colphone",
+              "arguments": [
+                "{{widgets.wa_2.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[3][0-9]{9}$"
+            }
+          ]
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "VENPHONE",
+              "arguments": [
+                "{{widgets.wa_2.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[4][0-9]{9}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.wa_2.inbound.Body}}",
+        "offset": {
+          "x": -230,
+          "y": 2220
+        }
+      }
+    },
+    {
+      "name": "set_wa2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_wa2_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_wa2 -%}\n{{flow.variables.set_wa2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_wa2"
+          }
+        ],
+        "offset": {
+          "x": 170,
+          "y": 2230
+        }
+      }
+    },
+    {
+      "name": "split_wa2_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "Copy_of_fail_wa1",
+          "event": "noMatch"
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_wa2}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_wa2}}",
+        "offset": {
+          "x": 490,
+          "y": 2230
+        }
+      }
+    },
+    {
+      "name": "Copy_of_fail_wa1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "Copy_of_function_2",
+          "event": "sent"
+        },
+        {
+          "next": "Copy_of_function_2",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 830,
+          "y": 2230
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar un número colombiano o venezolano de 10 dígitos que debe comenzar con *3* o *4* respectivamente.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "Copy_of_function_2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "wa_2",
+          "event": "success"
+        },
+        {
+          "next": "wa_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1200,
+          "y": 2220
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "etpv_cierre_noeleg_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -540,
+          "y": 3170
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hemos finalizado la comunicación por este canal. Esta encuesta es automática por lo que te pedimos no responder a este chat. \n\n*Si deseas ser contactado para futuros estudios*, diligencia el siguiente link {{flow.data.link}} antes del 23 de mayo. Este link sólo lo puedes contestar *1* vez.\n\n*¡Gracias!, cordialmente,*\n\n*_Equipo IPA_*"
+      }
+    },
+    {
+      "name": "fail_intro4",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "etpv_intro4_noeleg_1",
+          "event": "sent"
+        },
+        {
+          "next": "etpv_intro4_noeleg_1",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -360,
+          "y": 1220
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "etpv_intro4_noeleg_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "etpv_intro4_split",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "publish_gsheets_noansw",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 60,
+          "y": 1220
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Hola {{flow.data.name}}. \n\nSomos IPA Colombia. Gracias por participar en la encuesta de registro de nuestro estudio que busca identificar qué tipos de programas mejoran la calidad de vida de los venezolanos en Colombia. \n\nDe acuerdo con los criterios del estudio, no fuiste elegible para participar.  Sin embargo, nos gustaría comunicarnos contigo nuevamente para invitarte a participar en otros estudios de IPA.  \n\n*¿Estás de acuerdo con que te contactemos para invitarte a participar en futuros proyectos?*",
+        "timeout": "41400"
+      }
+    },
+    {
+      "name": "etpv_intro4_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_intro4",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reply",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Si",
+              "arguments": [
+                "{{widgets.etpv_intro4_noeleg_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,1 , 1,1.,SI,si,sí,SÍ"
+            }
+          ]
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "no",
+              "arguments": [
+                "{{widgets.etpv_intro4_noeleg_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "2, 2,2 ,2., NO,No,no"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.etpv_intro4_noeleg_1.inbound.Body}}",
+        "offset": {
+          "x": 620,
+          "y": 1200
+        }
+      }
+    },
+    {
+      "name": "publish_gsheets_noansw",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "etpv_cierre_noeleg_1",
+          "event": "success"
+        },
+        {
+          "next": "etpv_cierre_noeleg_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "default",
+        "environment_sid": "",
+        "offset": {
+          "x": -570,
+          "y": 2730
+        },
+        "function_sid": "",
+        "parameters": [
+          {
+            "value": "{{widgets.etpv_no_elegibles_mensaje_3.inbound.Body}}",
+            "key": "etpv_intro1"
+          },
+          {
+            "value": "{{flow.variables.set_intro1}}",
+            "key": "set_intro1"
+          },
+          {
+            "value": "{{widgets.etpv_intro2_noeleg_1.inbound.Body}}",
+            "key": "etpv_intro2"
+          },
+          {
+            "value": "{{flow.variables.set_intro2}}",
+            "key": "set_intro2"
+          },
+          {
+            "value": "{{flow.variables.set_initial_no_reply}}",
+            "key": "set_initial_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_initial_fail}}",
+            "key": "set_initial_fail"
+          },
+          {
+            "value": "{{flow.variables.set_reply}}",
+            "key": "set_reply"
+          },
+          {
+            "value": "{{widgets.etpv_intro3_noeleg_1.inbound.Body}}",
+            "key": "etpv_intro3"
+          },
+          {
+            "value": "{{flow.variables.set_survey_no_reply}}",
+            "key": "set_survey_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_survey_fail}}",
+            "key": "set_survey_fail"
+          },
+          {
+            "value": "{{flow.data.caseid}}",
+            "key": "caseid"
+          },
+          {
+            "value": "{{flow.data.documentado}}",
+            "key": "documentado"
+          },
+          {
+            "value": "{{flow.data.ciudad}}",
+            "key": "ciudad"
+          },
+          {
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "value": "{{flow.variables.set_multierror}}",
+            "key": "set_multierror"
+          },
+          {
+            "value": "{{widgets.wa_1.inbound.Body}}",
+            "key": "wa_1"
+          },
+          {
+            "value": "{{widgets.wa_2.inbound.Body}}",
+            "key": "wa_2"
+          },
+          {
+            "value": "{{flow.data.ola}}",
+            "key": "ola"
+          },
+          {
+            "value": "{{widgets.etpv_intro4_noeleg_1.inbound.Body}}",
+            "key": "etpv_intro4"
+          }
+        ],
+        "url": "https://persimmon-zebra-6468.twil.io/flyer"
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
