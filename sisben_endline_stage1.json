@@ -1,0 +1,7123 @@
+{
+  "description": "sisben_endline_stage1",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "next": "send_message_5",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "next": "intro1",
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -160,
+          "y": -330
+        }
+      }
+    },
+    {
+      "name": "control_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait1",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -670,
+          "y": 6470
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuántos de los cuatro videos lograste ver?\n\n_Escribe un número del 0 al 4_",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "control_2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait2",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -660,
+          "y": 6700
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuál fue el motivo de que no hayas visto *ninguno* de los videos?\n\nEnvía:\n*1* si tu respuesta es *Me cansé de recibir tantos mensajes*\n*2* si tu respuesta es *No me interesa saber más del Sisbén*\n*3* si tu respuesta es *No tuve tiempo para ver los videos*\n*4* si tu respuesta es *No tengo wifi/datos para reproducir videos*\n*5* si tu respuesta es *No tengo acceso al celular (me lo robaron, se dañó, lo tiene otra persona)*\n*6* si tu respuesta es *Otro motivo*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "sisben_conf",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait3",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 1290
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "*_Confío en que los trámites realizados con el gobierno colombiano tienden a ser exitosos_*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "sisben_tramit",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait4",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 1560
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuál es la *razón principal* por la que crees que los trámites del gobierno pueden llegar a fallar?\n\nEnvía el número correspondiente:\n*1*: Los procesos no son claros\n*2*: Piden documentos difíciles de obtener\n*3*: Es muy lejos o costoso ir a las oficinas a hacer los trámites\n*4*: Los funcionarios sólo le ayudan al que ellos quieren\n*5*: Se necesitan herramientas tecnológicas que no manejo o no tengo (como computador)\n*6*: Otra razón",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "sisben_tramitotro",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitd2",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 1850
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuál otra *razón principal*?\n\n_Escribe tu respuesta_",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "control_1_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_control_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "control_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.control_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "0, 0,0 ,ninguno,NINGUNO,Ninguno"
+            }
+          ]
+        },
+        {
+          "next": "control_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3",
+              "arguments": [
+                "{{widgets.control_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1, 1,1 ,uno,UNO,Uno,2, 2,2 ,dos,DOS,Dos,3, 3,3 ,tres,TRES,Tres"
+            }
+          ]
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.control_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,OMITIR,Omitir"
+            }
+          ]
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "4",
+              "arguments": [
+                "{{widgets.control_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "4, 4,4 ,cuatro,CUATRO,Cuatro,todos,TODOS,Todos"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.control_1.inbound.Body}}",
+        "offset": {
+          "x": 200,
+          "y": 6450
+        }
+      }
+    },
+    {
+      "name": "sisben_conf_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_sisben_conf",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_tramit",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5",
+              "arguments": [
+                "{{widgets.sisben_conf.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,1 ,2 ,3 ,4 ,5 , 1, 2, 3, 4, 5"
+            }
+          ]
+        },
+        {
+          "next": "sisben_tramit",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.sisben_conf.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.sisben_conf.inbound.Body}}",
+        "offset": {
+          "x": 190,
+          "y": 1290
+        }
+      }
+    },
+    {
+      "name": "sisben_tramit_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_sisben_tramit",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_concept",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5",
+              "arguments": [
+                "{{widgets.sisben_tramit.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,1 ,2 ,3 ,4 ,5 , 1, 2, 3, 4, 5"
+            }
+          ]
+        },
+        {
+          "next": "sisben_tramitotro",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "6",
+              "arguments": [
+                "{{widgets.sisben_tramit.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "6,6 , 6"
+            }
+          ]
+        },
+        {
+          "next": "sisben_concept",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.sisben_tramit.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.sisben_tramit.inbound.Body}}",
+        "offset": {
+          "x": 190,
+          "y": 1550
+        }
+      }
+    },
+    {
+      "name": "fail_control_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitb1",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitb1",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": 6470
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "fail_sisben_conf",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait3a",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait3a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 1290
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "fail_sisbentramit",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait4a",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait4a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 1550
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "intro3",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait_d",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -760,
+          "y": 710
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Hola, {{flow.data.name}}. Somos IPA Colombia.\n\nTe recordamos que esta encuesta estará disponible *hasta las 4:00 pm del día de hoy*. Por responderla, participarás en la rifa de *otros bonos de mercado por 200.000 pesos colombianos*. Nos comunicaremos en caso de que seas el ganador. \n\nEnvía:\n*1* si tu respuesta es *Quiero continuar con la encuesta*\n*2* si tu respuesta es *No quiero continuar con la encuesta*",
+        "timeout": "7200"
+      }
+    },
+    {
+      "name": "no_reply_message",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "sent"
+        },
+        {
+          "next": "encriptador",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2450,
+          "y": 2090
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Debido a que no se obtuvo una respuesta en el tiempo requerido, esta encuesta ha sido cerrada."
+      }
+    },
+    {
+      "name": "publish_gsheets",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "end2",
+          "event": "success"
+        },
+        {
+          "next": "end2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "default",
+        "environment_sid": "",
+        "offset": {
+          "x": -680,
+          "y": 8670
+        },
+        "function_sid": "",
+        "parameters": [
+          {
+            "value": "{{widgets.intro1.inbound.Body}}",
+            "key": "intro1"
+          },
+          {
+            "value": "{{widgets.intro2.inbound.Body}}",
+            "key": "intro2"
+          },
+          {
+            "value": "{{widgets.intro3.inbound.Body}}",
+            "key": "intro3"
+          },
+          {
+            "value": "{{flow.variables.set_reply}}",
+            "key": "set_reply"
+          },
+          {
+            "value": "{{flow.variables.set_initial_no_reply}}",
+            "key": "set_initial_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_initial_fail}}",
+            "key": "set_initial_fail"
+          },
+          {
+            "value": "{{flow.variables.set_multierror}}",
+            "key": "set_multierror"
+          },
+          {
+            "value": "{{widgets.control_1.inbound.Body}}",
+            "key": "control_1"
+          },
+          {
+            "value": "{{widgets.control_2.inbound.Body}}",
+            "key": "control_2"
+          },
+          {
+            "value": "{{widgets.control_2_3_otro.inbound.Body}}",
+            "key": "control_2_3_otro"
+          },
+          {
+            "value": "{{widgets.control_3.inbound.Body}}",
+            "key": "control_3"
+          },
+          {
+            "value": "{{widgets.sisben_conf.inbound.Body}}",
+            "key": "sisben_conf"
+          },
+          {
+            "value": "{{widgets.sisben_tramit.inbound.Body}}",
+            "key": "sisben_tramit"
+          },
+          {
+            "value": "{{widgets.sisben_tramitotro.inbound.Body}}",
+            "key": "sisben_tramitotro"
+          },
+          {
+            "value": "{{widgets.sisben_concept.inbound.Body}}",
+            "key": "sisben_concept"
+          },
+          {
+            "value": "{{widgets.sisben_cobert.inbound.Body}}",
+            "key": "sisben_cobert"
+          },
+          {
+            "value": "{{widgets.sisben_costo.inbound.Body}}",
+            "key": "sisben_costo"
+          },
+          {
+            "value": "{{widgets.sisben_lugar.inbound.Body}}",
+            "key": "sisben_lugar"
+          },
+          {
+            "value": "{{widgets.sisben_docs.inbound.Body}}",
+            "key": "sisben_docs"
+          },
+          {
+            "value": "{{widgets. sisben_portal.inbound.Body}}",
+            "key": "sisben_portal"
+          },
+          {
+            "value": "{{widgets.soc_cap1.inbound.Body}}",
+            "key": "soc_cap1"
+          },
+          {
+            "value": "{{widgets.soc_cap8.inbound.Body}}",
+            "key": "soc_cap8"
+          },
+          {
+            "value": "{{widgets.soc_cap9.inbound.Body}}",
+            "key": "soc_cap9"
+          },
+          {
+            "value": "{{widgets.soc_cap10.inbound.Body}}",
+            "key": "soc_cap10"
+          },
+          {
+            "value": "{{widgets.soc_capY.inbound.Body}}",
+            "key": "soc_capY"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.gnal_mail}}",
+            "key": "gnal_mail"
+          },
+          {
+            "value": "{{flow.variables.set_survey_no_reply}}",
+            "key": "set_survey_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_survey_fail}}",
+            "key": "set_survey_fail"
+          },
+          {
+            "value": "{{flow.data.caseid_etpv}}",
+            "key": "caseid_etpv"
+          },
+          {
+            "value": "{{flow.data.caseid}}",
+            "key": "caseid"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.name}}",
+            "key": "name"
+          },
+          {
+            "value": "{{flow.data.codigo}}",
+            "key": "codigo"
+          },
+          {
+            "value": "{{flow.data.generacion}}",
+            "key": "generacion"
+          },
+          {
+            "value": "{{flow.data.ola}}",
+            "key": "ola"
+          },
+          {
+            "value": "{{flow.data.grupo_tratamiento}}",
+            "key": "grupo_tratamiento"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.Number}}",
+            "key": "Number"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.num_wa}}",
+            "key": "num_wa"
+          },
+          {
+            "value": "{{flow.data.municipio}}",
+            "key": "municipio"
+          },
+          {
+            "value": "{{widgets.chequeo_atencion.inbound.Body}}",
+            "key": "chequeo_atencion"
+          },
+          {
+            "value": "{{flow.data.grupo_envio}}",
+            "key": "grupo_envio"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.conf_identity}}",
+            "key": "conf_identity"
+          }
+        ],
+        "url": "https://persimmon-zebra-6468.twil.io/flyer3"
+      }
+    },
+    {
+      "name": "end2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -680,
+          "y": 8880
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hemos finalizado la comunicación por este canal. \n\nEsta encuesta es automática por lo que te pedimos no responder a este chat.\n\n*¡Gracias!, cordialmente,*\n\n*_Equipo IPA_*"
+      }
+    },
+    {
+      "name": "sisben_concept",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait6a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 2130
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Sabes qué es el Sisbén?\n \nEnvía:\n*1* si tu respuesta es: *Seguro de salud*\n*2* si tu respuesta es: *Agencia que brinda ayuda económica*\n*3* si tu respuesta es: *Encuesta de caracterización socioeconómica*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "sisben_cobert",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait6b",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 2410
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Sabes a quién cubre el Sisbén?\n\nEnvía:\n*1* si tu respuesta es: *Ciudadanos colombianos*\n*2* si tu respuesta es: *Poblaciones especiales (desplazados internos)*\n*3* si tu respuesta es: *Extranjeros*\n*4* si tu respuesta es: *Todos los anteriores*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "sisben_costo",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait7",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 2690
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Sabes si las personas *deben pagar* para tener Sisbén? \n\nEnvía:\n*1* si tu respuesta es: *Sí deben pagar*\n*2* si tu respuesta es: *No deben pagar*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "sisben_lugar",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait8",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 2930
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "De los siguientes lugares, ¿sabes en cuál *NO* se puede solicitar el Sisbén?\n\nEnvía:\n*1* si tu respuesta es: *Oficina Sisbén*  \n*2* si tu respuesta es: *Portal del ciudadano*\n*3* si tu respuesta es: *Albergue o alojamiento temporal*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "sisben_docs",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitr1",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 3220
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Sabes con qué documentos puedes realizar el trámite para solicitar el Sisbén? \n\nEnvía el número según tu respuesta:\n*1*: Permiso Especial de Permanencia (PEP)\n*2*: Permiso por Protección Temporal (PPT)\n*3*: Salvoconducto de Permanencia SC-2\n*4*: Cédula de Extranjería\n*5*: Cualquiera de los anteriores",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "sisben_portal",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitr2",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 3480
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "El Portal del Ciudadano provee información sobre el Sisbén. ¿Sabes qué trámites se pueden realizar en el Portal del Ciudadano?  \n \nEnvía:\n*1* si tu respuesta es: *Solicitar y dar seguimiento a la encuesta Sisbén*\n*2* si tu respuesta es: *Solicitar priorización para subsidios*\n*3* si tu respuesta es: *Afiliación al sistema de salud*\n*4* si tu respuesta es: *Ninguna de las anteriores*\n*5* si tu respuesta es: *Todas las anteriores*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "set_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "sisben_conf_n",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reply -%}\n{{flow.variables.set_reply | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_reply"
+          }
+        ],
+        "offset": {
+          "x": -1270,
+          "y": 270
+        }
+      }
+    },
+    {
+      "name": "set_initial_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_no_reply-%}\n{{flow.variables.set_initial_no_reply| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 3230,
+          "y": 510
+        }
+      }
+    },
+    {
+      "name": "set_initial_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_fail-%}\n{{flow.variables.set_initial_fail| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_fail"
+          }
+        ],
+        "offset": {
+          "x": 3220,
+          "y": 240
+        }
+      }
+    },
+    {
+      "name": "intro3_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_intro3",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reply",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Si",
+              "arguments": [
+                "{{widgets.intro3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1, 1,1 ,Quiero continuar con la encuesta,quiero continuar con la encuesta,si,Si,sí,Sí"
+            }
+          ]
+        },
+        {
+          "next": "encriptador",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "no",
+              "arguments": [
+                "{{widgets.intro3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "No quiero,No quiero continuar con la encuesta,2, 2,2 ,2., NO,No,no,No,NO,NO, no., NO,no,NO.,No quiero participar"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.intro3.inbound.Body}}",
+        "offset": {
+          "x": -90,
+          "y": 710
+        }
+      }
+    },
+    {
+      "name": "funcion_wait1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "control_1_split",
+          "event": "success"
+        },
+        {
+          "next": "control_1_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -260,
+          "y": 6460
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait4",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_tramit_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_tramit_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 1560
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait3",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_conf_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_conf_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 1290
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "sisben_concept_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_sisben_concept",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_cobert",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3",
+              "arguments": [
+                "{{widgets.sisben_concept.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,1 ,2 ,3 , 1, 2, 3,"
+            }
+          ]
+        },
+        {
+          "next": "sisben_cobert",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.sisben_concept.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.sisben_concept.inbound.Body}}",
+        "offset": {
+          "x": 190,
+          "y": 2130
+        }
+      }
+    },
+    {
+      "name": "fail_sisben_cobert",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait6b_a",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait6b_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 2410
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "fail_sisben_concept",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait6a_a",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait6a_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 2130
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_wait6b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_cobert_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_cobert_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 2410
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait6a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_concept_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_concept_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 2130
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait7",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_costo_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_costo_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 2690
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "fail_sisben_costo",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait7_a",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait7_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 2690
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_wait8",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_lugar_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_lugar_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 2930
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "fail_sisben_lugar",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait8_a",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait8_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 2930
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "sisben_costo_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_sisben_costo",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_lugar",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2",
+              "arguments": [
+                "{{widgets.sisben_costo.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2, 1, 2,1 ,2 "
+            }
+          ]
+        },
+        {
+          "next": "sisben_lugar",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.sisben_costo.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.sisben_costo.inbound.Body}}",
+        "offset": {
+          "x": 190,
+          "y": 2690
+        }
+      }
+    },
+    {
+      "name": "sisben_lugar_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_sisben_lugar",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_docs",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3",
+              "arguments": [
+                "{{widgets.sisben_lugar.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3, 1, 2, 3, 1 ,2 ,3 "
+            }
+          ]
+        },
+        {
+          "next": "sisben_docs",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.sisben_lugar.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.sisben_lugar.inbound.Body}}",
+        "offset": {
+          "x": 190,
+          "y": 2930
+        }
+      }
+    },
+    {
+      "name": "sisben_docs_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_sisben_docs",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_portal",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5",
+              "arguments": [
+                "{{widgets.sisben_docs.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,1 ,2 ,3 ,4 ,5 , 1, 2, 3, 4, 5"
+            }
+          ]
+        },
+        {
+          "next": "sisben_portal",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.sisben_docs.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.sisben_docs.inbound.Body}}",
+        "offset": {
+          "x": 190,
+          "y": 3220
+        }
+      }
+    },
+    {
+      "name": "fail_sisben_docs",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait9_a",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait9_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 3220
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitr1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_docs_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_docs_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 3220
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "fail_sisben_portal",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait10_a",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait10_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 3480
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitr2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_portal_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_portal_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 3480
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "sisben_portal_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_sisben_portal",
+          "event": "noMatch"
+        },
+        {
+          "next": "chequeo_atencion",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5",
+              "arguments": [
+                "{{widgets.sisben_portal.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,1 ,2 ,3 ,4 , 1, 2, 3, 4,5, 5"
+            }
+          ]
+        },
+        {
+          "next": "chequeo_atencion",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.sisben_portal.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.sisben_portal.inbound.Body}}",
+        "offset": {
+          "x": 190,
+          "y": 3480
+        }
+      }
+    },
+    {
+      "name": "end1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "sent"
+        },
+        {
+          "next": "encriptador",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -680,
+          "y": 8230
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Muchas gracias por responder nuestra encuesta. En dos semanas nos pondremos en contacto con los ganadores."
+      }
+    },
+    {
+      "name": "intro1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "intro2",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -760,
+          "y": 110
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Hola, {{flow.data.name}}. Somos IPA Colombia.\n\nVimos que has tenido inconvenientes diligenciando nuestra última encuesta y nos gustaría darte otra oportunidad para participar.\n\nRecuerda que la encuesta toma 10-15 minutos y al responderla participarás en la *rifa de un bono de mercado de 200.000 pesos colombianos por cada 50 participantes*. En dos semanas nos pondremos en contacto con los ganadores y luego anunciaremos los resultados de la rifa a todos los participantes.\n\nEnvía:\n*1* si tu respuesta es *Quiero continuar con la encuesta*\n*2* si tu respuesta es *No quiero continuar con la encuesta*",
+        "timeout": "54000"
+      }
+    },
+    {
+      "name": "intro1_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_intro1",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reply",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "SI",
+              "arguments": [
+                "{{widgets.intro1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1, 1,1 ,Quiero continuar con la encuesta,quiero continuar con la encuesta,si,Si,sí,Sí"
+            }
+          ]
+        },
+        {
+          "next": "encriptador",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "NO",
+              "arguments": [
+                "{{widgets.intro1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "No quiero,No quiero continuar con la encuesta,2, 2,2 ,2.,No,NO,NO, no., NO,no,NO.,No quiero participar"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.intro1.inbound.Body}}",
+        "offset": {
+          "x": -90,
+          "y": 110
+        }
+      }
+    },
+    {
+      "name": "send_message_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait_a1",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait_a1",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 960,
+          "y": 100
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo tu respuesta.\n\nRecuerda que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas. \n\nPor favor responde únicamente con los números *1* o *2*, de acuerdo a tu respuesta."
+      }
+    },
+    {
+      "name": "funcion_wait_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "intro1_split",
+          "event": "success"
+        },
+        {
+          "next": "intro1_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -430,
+          "y": 110
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "set_intro1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_intro1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro1 -%}\n{{flow.variables.set_intro1 | plus: 1}}\n{%- else -%}\n 1\n{%- endif -%}",
+            "key": "set_intro1"
+          }
+        ],
+        "offset": {
+          "x": 250,
+          "y": 110
+        }
+      }
+    },
+    {
+      "name": "split_count_intro1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "send_message_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "multierror_intro",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">5",
+              "arguments": [
+                "{{flow.variables.set_intro1}}"
+              ],
+              "type": "greater_than",
+              "value": "5"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_intro1}}",
+        "offset": {
+          "x": 610,
+          "y": 100
+        }
+      }
+    },
+    {
+      "name": "multierror_intro",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "set_multierror",
+          "event": "sent"
+        },
+        {
+          "next": "set_multierror",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1270,
+          "y": 490
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Parece que no se ha podido responder en una forma en que el sistema entienda la respuesta. Nos estaremos comunicando nuevamente \n\n*Esta encuesta será cerrada en este momento.*"
+      }
+    },
+    {
+      "name": "intro2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait_b",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "intro3",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -760,
+          "y": 380
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Hola, {{flow.data.name}}. Somos IPA Colombia.\n\nTe recordamos que esta encuesta estará disponible *hasta las 4:00 pm del día de hoy*. Por responderla, participarás en la rifa de *otros bonos de mercado por 200.000 pesos colombianos*. Nos comunicaremos en caso de que seas el ganador. \n\nEnvía:\n*1* si tu respuesta es *Quiero continuar con la encuesta*\n*2* si tu respuesta es *No quiero continuar con la encuesta*",
+        "timeout": "18000"
+      }
+    },
+    {
+      "name": "funcion_wait_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "intro2_split",
+          "event": "success"
+        },
+        {
+          "next": "intro2_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -430,
+          "y": 400
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "intro2_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_intro2",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reply",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "SI",
+              "arguments": [
+                "{{widgets.intro2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1, 1,1 ,Quiero continuar con la encuesta,quiero continuar con la encuesta,si,Si,sí,Sí"
+            }
+          ]
+        },
+        {
+          "next": "encriptador",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "NO",
+              "arguments": [
+                "{{widgets.intro2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "No quiero,No quiero continuar con la encuesta,2, 2,2 ,2.,No,NO,NO, no., NO,no,NO.,No quiero participar"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.intro2.inbound.Body}}",
+        "offset": {
+          "x": -90,
+          "y": 410
+        }
+      }
+    },
+    {
+      "name": "set_intro2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_intro2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro2 -%}\n{{flow.variables.set_intro2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_intro2"
+          }
+        ],
+        "offset": {
+          "x": 250,
+          "y": 400
+        }
+      }
+    },
+    {
+      "name": "split_count_intro2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "send_message_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "multierror_intro",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">5",
+              "arguments": [
+                "{{flow.variables.set_intro2}}"
+              ],
+              "type": "greater_than",
+              "value": "5"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_intro2}}",
+        "offset": {
+          "x": 610,
+          "y": 390
+        }
+      }
+    },
+    {
+      "name": "send_message_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait_a2",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait_a2",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 960,
+          "y": 390
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo tu respuesta.\n\nRecuerda que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas. \n\nPor favor responde únicamente con los números *1* o *2*, de acuerdo a tu respuesta."
+      }
+    },
+    {
+      "name": "set_survey_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "no_reply_message",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_survey_no_reply-%}\n{{flow.variables.set_survey_no_reply| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_survey_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 2450,
+          "y": 1750
+        }
+      }
+    },
+    {
+      "name": "set_survey_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "fail_message",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_survey_fail-%}\n{{flow.variables.set_survey_fail| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_survey_fail"
+          }
+        ],
+        "offset": {
+          "x": 2790,
+          "y": 1750
+        }
+      }
+    },
+    {
+      "name": "fail_message",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "sent"
+        },
+        {
+          "next": "encriptador",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2790,
+          "y": 2090
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Lo sentimos, un error inesperado hace que no podamos seguir con la encuesta. Nos estaremos comunicando con usted en las próximas semanas."
+      }
+    },
+    {
+      "name": "sisben_cobert_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_sisben_cobert",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_costo",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4",
+              "arguments": [
+                "{{widgets.sisben_cobert.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,1 ,2 ,3 ,4 , 1, 2, 3, 4"
+            }
+          ]
+        },
+        {
+          "next": "sisben_costo",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.sisben_cobert.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.sisben_cobert.inbound.Body}}",
+        "offset": {
+          "x": 190,
+          "y": 2410
+        }
+      }
+    },
+    {
+      "name": "set_control_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_control_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_control_1 -%}\n{{flow.variables.set_control_1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_control_1"
+          }
+        ],
+        "offset": {
+          "x": 760,
+          "y": 6460
+        }
+      }
+    },
+    {
+      "name": "split_count_control_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_control_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_control_1}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_control_1}}",
+        "offset": {
+          "x": 1210,
+          "y": 6460
+        }
+      }
+    },
+    {
+      "name": "set_sisben_conf",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_sisben_conf",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sisben_conf -%}\n{{flow.variables.set_sisben_conf| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_sisben_conf"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 1290
+        }
+      }
+    },
+    {
+      "name": "set_sisben_tramit",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_sisben_tramit",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sisben_tramit  -%}\n{{flow.variables.set_sisben_tramit  | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_sisben_tramit"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 1550
+        }
+      }
+    },
+    {
+      "name": "set_sisben_concept",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_sisben_concept",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sisben_concept  -%}\n{{flow.variables.set_sisben_concept | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_sisben_concept"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 2130
+        }
+      }
+    },
+    {
+      "name": "set_sisben_costo",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_sisben_costo",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sisben_costo  -%}\n{{flow.variables.set_sisben_costo | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_sisben_costo"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 2690
+        }
+      }
+    },
+    {
+      "name": "set_sisben_cobert",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_sisben_cobert",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sisben_cobert  -%}\n{{flow.variables.set_sisben_cobert | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_sisben_cobert"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 2410
+        }
+      }
+    },
+    {
+      "name": "set_sisben_lugar",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_sisben_lugar",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sisben_lugar  -%}\n{{flow.variables.set_sisben_lugar | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_sisben_lugar"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 2930
+        }
+      }
+    },
+    {
+      "name": "set_sisben_docs",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_sisben_docs",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sisben_docs  -%}\n{{flow.variables.set_sisben_docs | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_sisben_docs"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 3220
+        }
+      }
+    },
+    {
+      "name": "set_sisben_portal",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_sisben_portal",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sisben_portal  -%}\n{{flow.variables.set_sisben_portal | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_sisben_portal"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 3480
+        }
+      }
+    },
+    {
+      "name": "split_count_sisben_conf",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_sisben_conf",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_tramit",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_sisben_conf}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_sisben_conf}}",
+        "offset": {
+          "x": 1200,
+          "y": 1290
+        }
+      }
+    },
+    {
+      "name": "split_count_sisben_tramit",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_sisbentramit",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_concept",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_sisben_tramit}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_sisben_tramit}}",
+        "offset": {
+          "x": 1200,
+          "y": 1550
+        }
+      }
+    },
+    {
+      "name": "split_count_sisben_concept",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_sisben_concept",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_cobert",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_sisben_concept}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_sisben_concept}}",
+        "offset": {
+          "x": 1200,
+          "y": 2130
+        }
+      }
+    },
+    {
+      "name": "split_count_sisben_cobert",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_sisben_cobert",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_costo",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_sisben_cobert}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_sisben_cobert}}",
+        "offset": {
+          "x": 1200,
+          "y": 2410
+        }
+      }
+    },
+    {
+      "name": "split_count_sisben_costo",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_sisben_costo",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_lugar",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_sisben_costo}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_sisben_costo}}",
+        "offset": {
+          "x": 1200,
+          "y": 2690
+        }
+      }
+    },
+    {
+      "name": "split_count_sisben_lugar",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_sisben_lugar",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_docs",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_sisben_lugar}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_sisben_lugar}}",
+        "offset": {
+          "x": 1200,
+          "y": 2930
+        }
+      }
+    },
+    {
+      "name": "split_count_sisben_docs",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_sisben_docs",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_portal",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_sisben_docs}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_sisben_docs}}",
+        "offset": {
+          "x": 1200,
+          "y": 3220
+        }
+      }
+    },
+    {
+      "name": "split_count_sisben_portal",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_sisben_portal",
+          "event": "noMatch"
+        },
+        {
+          "next": "chequeo_atencion",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_sisben_portal}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_sisben_portal}}",
+        "offset": {
+          "x": 1200,
+          "y": 3480
+        }
+      }
+    },
+    {
+      "name": "funcion_wait_a1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "intro1",
+          "event": "success"
+        },
+        {
+          "next": "intro1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1300,
+          "y": 100
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_waitb1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "control_1",
+          "event": "success"
+        },
+        {
+          "next": "control_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2010,
+          "y": 6470
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait3a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_conf",
+          "event": "success"
+        },
+        {
+          "next": "sisben_conf",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 1290
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait4a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_tramit",
+          "event": "success"
+        },
+        {
+          "next": "sisben_tramit",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 1550
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait6a_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_concept",
+          "event": "success"
+        },
+        {
+          "next": "sisben_concept",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 2130
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait6b_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_cobert",
+          "event": "success"
+        },
+        {
+          "next": "sisben_cobert",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 2410
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait7_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_costo",
+          "event": "success"
+        },
+        {
+          "next": "sisben_costo",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 2690
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait8_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_lugar",
+          "event": "success"
+        },
+        {
+          "next": "sisben_lugar",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 2930
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait9_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_docs",
+          "event": "success"
+        },
+        {
+          "next": "sisben_docs",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 3220
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait10_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_portal",
+          "event": "success"
+        },
+        {
+          "next": "sisben_portal",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 3480
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "set_multierror",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_multierror -%}\n{{flow.variables.set_multierror| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_multierror"
+          }
+        ],
+        "offset": {
+          "x": -1280,
+          "y": 740
+        }
+      }
+    },
+    {
+      "name": "soc_cap1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waittp1",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 4280
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Indica si perteneces a alguno de los siguientes grupos. Si perteneces a más de uno indica el más importante:\n\nEnvía:\n*1*: Cooperativa u otro grupo asociado a su trabajo\n*2*: Grupo religioso o espiritual\n*3*: Grupo financiero o de ahorros\n*4*: Grupo o movimiento político\n*5*: Grupo deportivo\n*6*: Organización no gubernamental o grupo cívico\n*7*: Comité del barrio\n*8*: Ninguno",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waittp1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap1_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap1_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -260,
+          "y": 4270
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap1_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap1",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap_n2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5,6,7",
+              "arguments": [
+                "{{widgets.soc_cap1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,6,7, 1, 2, 3, 4, 5, 6, 7,1 ,2 ,3 ,4 ,5 ,6, 7 "
+            }
+          ]
+        },
+        {
+          "next": "soc_cap_n2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "8",
+              "arguments": [
+                "{{widgets.soc_cap1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "8, 8,8 "
+            }
+          ]
+        },
+        {
+          "next": "soc_cap_n2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap1.inbound.Body}}",
+        "offset": {
+          "x": 200,
+          "y": 4270
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_cap1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_cap1  -%}\n{{flow.variables.set_soc_cap1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap1"
+          }
+        ],
+        "offset": {
+          "x": 760,
+          "y": 4270
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_cap1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap1",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap_n2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap1}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap1}}",
+        "offset": {
+          "x": 1210,
+          "y": 4270
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait11_a",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait11_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": 4270
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_wait11_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap1",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 4270
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "gnal_mail",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitf5",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -650,
+          "y": 5820
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Por favor escribe tu *correo electrónico personal. En caso de ser el ganador de la rifa del bono de mercado de 200.000 pesos, recibirás la información a ese correo.* \n\nSi no tienes correo electrónico por favor escribe omitir.",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "sisben_conf_n",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait_c1",
+          "event": "sent"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 1030
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Entonces comenzamos: \n\nPara la siguiente afirmación responde con un número del uno (1) al cinco (5) qué tan de acuerdo estás, donde:\n\n*1* es el escalón más bajo y significa *\"Muy en Desacuerdo\"* \n\n*5* el escalón más alto y significa *\"Muy de Acuerdo\"*"
+      }
+    },
+    {
+      "name": "funcion_wait_a2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "intro2",
+          "event": "success"
+        },
+        {
+          "next": "intro2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1300,
+          "y": 390
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait_a3",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "intro3",
+          "event": "success"
+        },
+        {
+          "next": "intro3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1300,
+          "y": 700
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "send_message_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait_a3",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait_a3",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 960,
+          "y": 700
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo tu respuesta.\n\nRecuerda que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas. \n\nPor favor responde únicamente con los números *1* o *2*, de acuerdo a tu respuesta."
+      }
+    },
+    {
+      "name": "split_count_intro3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "send_message_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "multierror_intro",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">5",
+              "arguments": [
+                "{{flow.variables.set_intro3}}"
+              ],
+              "type": "greater_than",
+              "value": "5"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_intro3}}",
+        "offset": {
+          "x": 610,
+          "y": 700
+        }
+      }
+    },
+    {
+      "name": "set_intro3",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_intro3",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro3 -%}\n{{flow.variables.set_intro3 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_intro2"
+          }
+        ],
+        "offset": {
+          "x": 250,
+          "y": 710
+        }
+      }
+    },
+    {
+      "name": "funcion_wait_c1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_conf",
+          "event": "success"
+        },
+        {
+          "next": "sisben_conf",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 1030
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap_n",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait_d1",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait_d1",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 4010
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Ahora queremos preguntarte por grupos, organizaciones, redes o asociaciones a las que tú o algún otro miembro de tu hogar pertenezca."
+      }
+    },
+    {
+      "name": "funcion_wait_d1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap1",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 4030
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap_n2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait_d3",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait_d3",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 4520
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Para las siguientes 2 preguntas responde con un número del uno (1) al cinco (5), donde:\n\n*1* es el escalón más bajo y significa *\"Muy poco\"*\n\n*5* el escalón más alto y significa *\"Mucho\"*"
+      }
+    },
+    {
+      "name": "soc_cap8",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waittp2c",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 4780
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "De 1 a 5, ¿qué tan líder te consideras dentro de tu comunidad en general?",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waittp2c",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap8_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap8_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -320,
+          "y": 4780
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap8_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap8",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap9",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5",
+              "arguments": [
+                "{{widgets.soc_cap8.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,1 ,2 ,3 ,4 ,5 , 1, 2, 3, 4, 5"
+            }
+          ]
+        },
+        {
+          "next": "soc_cap9",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap8.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap8.inbound.Body}}",
+        "offset": {
+          "x": 220,
+          "y": 4780
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap8",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_soc_cap8",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_cap8   -%}\n{{flow.variables.set_soc_cap8 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap8"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 4780
+        }
+      }
+    },
+    {
+      "name": "split_soc_cap8",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap8",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap9",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap8}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap8}}",
+        "offset": {
+          "x": 1200,
+          "y": 4780
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap8",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait12_d",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait12_d",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 4780
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_wait12_d",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap8",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap8",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 4780
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap9",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waittp2d",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 5020
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "De 1 a 5, ¿qué tanto confían las personas de tu comunidad en ti?",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waittp2d",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap9_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap9_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -270,
+          "y": 5020
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap9_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap9",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap10",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5",
+              "arguments": [
+                "{{widgets.soc_cap9.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,1 ,2 ,3 ,4 ,5 , 1, 2, 3, 4, 5"
+            }
+          ]
+        },
+        {
+          "next": "soc_cap10",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap9.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap9.inbound.Body}}",
+        "offset": {
+          "x": 220,
+          "y": 5020
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap9",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_soc_cap9",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_cap9   -%}\n{{flow.variables.set_soc_cap9 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap9"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 5020
+        }
+      }
+    },
+    {
+      "name": "split_soc_cap9",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap9",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap10",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap9}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap9}}",
+        "offset": {
+          "x": 1200,
+          "y": 5020
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap9",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait13_d",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait13_d",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 5020
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_wait13_d",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap9",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap9",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 5020
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap10",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waite5",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -690,
+          "y": 5260
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Si el gobierno colombiano quiere promover un nuevo programa de beneficios a migrantes y estuvieras convencido de que este es beneficioso, por favor escribe un *número de familias de venezolanos, entre 0 y 100*, que crees que podrías convencer de aplicar a dicho programa.\n\n*_Responde un número de 0 a 100_*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "soc_capY",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitf1",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -660,
+          "y": 5550
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Si salieras a hacer una diligencia y tuvieras que pedirle a un vecino que te guarde las llaves de la casa porque otro miembro del hogar va a reclamarlas. De *100 personas del barrio y que no vivan contigo, ¿en cuántas confiarías para que te guarden las llaves?* \n\n*_Responde un número de 0 a 100_*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_wait_d",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "intro3_split",
+          "event": "success"
+        },
+        {
+          "next": "intro3_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -430,
+          "y": 730
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "control_2_split",
+          "event": "success"
+        },
+        {
+          "next": "control_2_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -260,
+          "y": 6700
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "control_2_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_control_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Todos",
+              "arguments": [
+                "{{widgets.control_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5, 1, 2, 3, 4, 5,1 ,2 ,3 ,4,5  "
+            }
+          ]
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.control_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        },
+        {
+          "next": "control_2_3_otro",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Otro",
+              "arguments": [
+                "{{widgets.control_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "6,6 , 6,otro,Otro,OTRO"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.control_2.inbound.Body}}",
+        "offset": {
+          "x": 200,
+          "y": 6700
+        }
+      }
+    },
+    {
+      "name": "set_control_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "count_control_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_control_2 -%}\n{{flow.variables.set_control_2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_control_2"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 6700
+        }
+      }
+    },
+    {
+      "name": "count_control_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_control_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_control_2}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_control_2}}",
+        "offset": {
+          "x": 1200,
+          "y": 6700
+        }
+      }
+    },
+    {
+      "name": "fail_control_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitd1",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitd1",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 6700
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitd1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "control_2",
+          "event": "success"
+        },
+        {
+          "next": "control_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 6700
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_waitd2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_tramitotro_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_tramitotro_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -280,
+          "y": 1850
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "sisben_tramitotro_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_sisben_tramitotro",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_concept",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Texto",
+              "arguments": [
+                "{{widgets.sisben_tramitotro.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9_ ]*$"
+            }
+          ]
+        },
+        {
+          "next": "sisben_concept",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.sisben_tramitotro.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.sisben_tramitotro.inbound.Body}}",
+        "offset": {
+          "x": 180,
+          "y": 1850
+        }
+      }
+    },
+    {
+      "name": "set_sisben_tramitotro",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_sisben_tramitotro",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sisben_tramitotro -%}\n{{flow.variables.set_sisben_tramitotro | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_sisben_tramitotro"
+          }
+        ],
+        "offset": {
+          "x": 740,
+          "y": 1850
+        }
+      }
+    },
+    {
+      "name": "split_count_sisben_tramitotro",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_sisben_tramitotro",
+          "event": "noMatch"
+        },
+        {
+          "next": "sisben_concept",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_sisben_tramitotro}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_sisben_tramitotro}}",
+        "offset": {
+          "x": 1190,
+          "y": 1850
+        }
+      }
+    },
+    {
+      "name": "fail_sisben_tramitotro",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitd3",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitd3",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1610,
+          "y": 1850
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar palabras o números sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitd3",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_tramitotro",
+          "event": "success"
+        },
+        {
+          "next": "sisben_tramitotro",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1990,
+          "y": 1850
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_waite5",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap10_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap10_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -260,
+          "y": 5260
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap10_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap10",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_capY",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Numero",
+              "arguments": [
+                "{{widgets.soc_cap10.inbound.Body}}"
+              ],
+              "type": "less_than",
+              "value": "101"
+            }
+          ]
+        },
+        {
+          "next": "soc_capY",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap10.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap10.inbound.Body}}",
+        "offset": {
+          "x": 200,
+          "y": 5260
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap10",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_cap10",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_cap10 -%}\n{{flow.variables.set_soc_cap10 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap10"
+          }
+        ],
+        "offset": {
+          "x": 760,
+          "y": 5260
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_cap10",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap10",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_capY",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap10}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap10}}",
+        "offset": {
+          "x": 1200,
+          "y": 5260
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap10",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waite6",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waite6",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": 5260
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, envía sólo números menores o iguales a 100, sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waite6",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap10",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap10",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2020,
+          "y": 5260
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_waitf1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_capY_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_capY_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -230,
+          "y": 5550
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "set_soc_capY",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_capY",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_capY -%}\n{{flow.variables.set_soc_capY | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_capY"
+          }
+        ],
+        "offset": {
+          "x": 790,
+          "y": 5550
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_capY",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_capY",
+          "event": "noMatch"
+        },
+        {
+          "next": "gnal_mail",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_capY}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_capY}}",
+        "offset": {
+          "x": 1240,
+          "y": 5550
+        }
+      }
+    },
+    {
+      "name": "fail_soc_capY",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitf2",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitf2",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1670,
+          "y": 5560
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, envía sólo números menores o iguales a 100, sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitf2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_capY",
+          "event": "success"
+        },
+        {
+          "next": "soc_capY",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2010,
+          "y": 5550
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_waitf5",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "gnal_mail_split",
+          "event": "success"
+        },
+        {
+          "next": "gnal_mail_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -160,
+          "y": 5810
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "gnal_mail_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_gnal_mail",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_tratamiento",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Correo",
+              "arguments": [
+                "{{widgets.gnal_mail.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$"
+            }
+          ]
+        },
+        {
+          "next": "split_tratamiento",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "No",
+              "arguments": [
+                "{{widgets.gnal_mail.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "NO, NO,NO ,no,no , no,NO.,no."
+            }
+          ]
+        },
+        {
+          "next": "split_tratamiento",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.gnal_mail.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.gnal_mail.inbound.Body}}",
+        "offset": {
+          "x": 250,
+          "y": 5830
+        }
+      }
+    },
+    {
+      "name": "set_gnal_mail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_gnal_mail",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_gnal_mail -%}\n{{flow.variables.set_gnal_mail | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_gnal_mail"
+          }
+        ],
+        "offset": {
+          "x": 810,
+          "y": 5820
+        }
+      }
+    },
+    {
+      "name": "split_count_gnal_mail",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_gnal_mail",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_tratamiento",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_gnal_mail}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_gnal_mail}}",
+        "offset": {
+          "x": 1270,
+          "y": 5820
+        }
+      }
+    },
+    {
+      "name": "fail_gnal_mail",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitf6",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitf6",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1680,
+          "y": 5810
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, envía el correo con el @ y el dominio completo.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitf6",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "gnal_mail",
+          "event": "success"
+        },
+        {
+          "next": "gnal_mail",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2050,
+          "y": 5820
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "encriptador",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "publish_gsheets",
+          "event": "success"
+        },
+        {
+          "next": "publish_gsheets",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS1161adc18ebc342b09069b3f1bc21ae1",
+        "environment_sid": "ZE2a970e75d41f69acd4a250ef48abdd02",
+        "offset": {
+          "x": -680,
+          "y": 8450
+        },
+        "function_sid": "ZH2bcfa71f468d237313d4b6a1cdd026c2",
+        "parameters": [
+          {
+            "value": "{{widgets.gnal_mail.inbound.Body}}",
+            "key": "gnal_mail"
+          },
+          {
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "value": "{{flow.data.Number}}",
+            "key": "Number"
+          },
+          {
+            "value": "{{flow.data.num_wa}}",
+            "key": "num_wa"
+          },
+          {
+            "value": "{{widgets.conf_identity.inbound.Body}}",
+            "key": "conf_identity"
+          }
+        ],
+        "url": "https://encrypt-9407.twil.io/encrypter"
+      }
+    },
+    {
+      "name": "conf_identity",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitg",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -680,
+          "y": 7460
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Por último, queremos saber quién está respondiendo esta encuesta. \n\nPuedes responder con tranquilidad, tu respuesta no afectará de ninguna manera tu participación en el estudio.\n\nEnvía el número correspondiente:\n*1*:  {{flow.data.name}}\n*2*:  Familiar de {{flow.data.name}}\n*3*:  Amigo/a de {{flow.data.name}}\n*4*:  Vecino/a de {{flow.data.name}}\n*5*: Compañero/a de trabajo de {{flow.data.name}}\n*6*: No conozco a {{flow.data.name}}",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waitg",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "conf_identity_split",
+          "event": "success"
+        },
+        {
+          "next": "conf_identity_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -250,
+          "y": 7450
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "conf_identity_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_conf_identity",
+          "event": "noMatch"
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5,6",
+              "arguments": [
+                "{{widgets.conf_identity.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,6,1 ,2 ,3 ,4 ,5 ,6, 1, 2, 3, 4, 5, 6"
+            }
+          ]
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.conf_identity.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.conf_identity.inbound.Body}}",
+        "offset": {
+          "x": 210,
+          "y": 7450
+        }
+      }
+    },
+    {
+      "name": "set_conf_identity",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_conf_identity",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_conf_identity -%}\n{{flow.variables.set_conf_identity | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_conf_identity"
+          }
+        ],
+        "offset": {
+          "x": 790,
+          "y": 7440
+        }
+      }
+    },
+    {
+      "name": "split_count_conf_identity",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_conf_identity",
+          "event": "noMatch"
+        },
+        {
+          "next": "end1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_conf_identity}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_conf_identity}}",
+        "offset": {
+          "x": 1230,
+          "y": 7450
+        }
+      }
+    },
+    {
+      "name": "fail_conf_identity",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitgg",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitgg",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1650,
+          "y": 7440
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitgg",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "conf_identity",
+          "event": "success"
+        },
+        {
+          "next": "conf_identity",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2030,
+          "y": 7440
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "send_message_5",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1240,
+          "y": 30
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Este canal de comunicación no está habilitado para la recepción de mensajes."
+      }
+    },
+    {
+      "name": "soc_capY_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_capY",
+          "event": "noMatch"
+        },
+        {
+          "next": "gnal_mail",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Numero",
+              "arguments": [
+                "{{widgets.soc_capY.inbound.Body}}"
+              ],
+              "type": "less_than",
+              "value": "101"
+            }
+          ]
+        },
+        {
+          "next": "gnal_mail",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_capY.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_capY.inbound.Body}}",
+        "offset": {
+          "x": 220,
+          "y": 5550
+        }
+      }
+    },
+    {
+      "name": "chequeo_atencion",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitr3",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -710,
+          "y": 3790
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Dentro de los símbolos patrios de Venezuela se encuentra la bandera nacional, que cuenta con tres franjas y 8 estrellas. ¿Cuántos colores tienen las franjas la bandera de Venezuela?\n \nEnvía:\n*1* si tu respuesta es: *Cuatro colores*\n*2* si tu respuesta es: *Tres colores*\n*3* si tu respuesta es: *Un color*\n*4* si tu respuesta es: *Dos colores*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waitr3",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "chequeo_atencion_split",
+          "event": "success"
+        },
+        {
+          "next": "chequeo_atencion_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -260,
+          "y": 3790
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "chequeo_atencion_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "ans_chequeo_atencion",
+          "event": "noMatch"
+        },
+        {
+          "next": "ans_chequeo_atencion",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.chequeo_atencion.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "2,2 colores,Dos colores,dos colores,dos,Dos,DOS,DOS COLORES"
+            }
+          ]
+        },
+        {
+          "next": "ans_chequeo_atencion",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.chequeo_atencion.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.chequeo_atencion.inbound.Body}}",
+        "offset": {
+          "x": 180,
+          "y": 3790
+        }
+      }
+    },
+    {
+      "name": "ans_chequeo_atencion",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait10_b",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait10_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 560,
+          "y": 3790
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "La respuesta correcta es *2 (tres colores)*\n\n¡Mantente atento a la encuesta, ya falta poco para terminarla!"
+      }
+    },
+    {
+      "name": "funcion_wait10_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap_n",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap_n",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 940,
+          "y": 3790
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "funcion_wait_d3",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap8",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap8",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -330,
+          "y": 4530
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap3",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitf3",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3590,
+          "y": 4590
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "En el último mes, ¿cuántas veces tú o algún miembro de tu hogar participó en alguna actividad en ese grupo?",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waitf3",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap3_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap3_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 4020,
+          "y": 4580
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap3_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap3",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Numero",
+              "arguments": [
+                "{{widgets.soc_cap3.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[0-9]*$"
+            }
+          ]
+        },
+        {
+          "next": "soc_cap4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap3.inbound.Body}}",
+        "offset": {
+          "x": 4450,
+          "y": 4570
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap3",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_cap3",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_cap3 -%}\n{{flow.variables.set_soc_cap3 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap3"
+          }
+        ],
+        "offset": {
+          "x": 4980,
+          "y": 4580
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_cap3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap3",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap3}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap3}}",
+        "offset": {
+          "x": 5460,
+          "y": 4580
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitf4",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitf4",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 5940,
+          "y": 4600
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, envía sólo números sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitf4",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap3",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 6320,
+          "y": 4590
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap4",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitf7",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3590,
+          "y": 4820
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuántas personas se reúnen regularmente en este grupo?",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waitf7",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap4_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap4_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 4030,
+          "y": 4810
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap4_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap4",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap5",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Numero",
+              "arguments": [
+                "{{widgets.soc_cap4.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[0-9]*$"
+            }
+          ]
+        },
+        {
+          "next": "soc_cap5",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap4.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap4.inbound.Body}}",
+        "offset": {
+          "x": 4460,
+          "y": 4800
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap4",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_cap4",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_cap4 -%}\n{{flow.variables.set_soc_cap4 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap4"
+          }
+        ],
+        "offset": {
+          "x": 4990,
+          "y": 4810
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_cap4",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap4",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap5",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap4}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap4}}",
+        "offset": {
+          "x": 5470,
+          "y": 4810
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap4",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitf8",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitf8",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 5920,
+          "y": 4830
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, envía sólo números sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitf8",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap4",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap4",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 6330,
+          "y": 4820
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap5",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waittp9",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3590,
+          "y": 5040
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuál es el *principal beneficio* de pertenecer a éste grupo?\n\nEnvía:\n*1* si tu respuesta es: *Mejora el acceso de su hogar a servicios*\n*2* si tu respuesta es: *Es importante en casos de emergencias*\n*3* si tu respuesta es: *Beneficia a toda la comunidad*\n*4* si tu respuesta es: *Disfrute y recreación*\n*5* si tu respuesta es: *Espiritual, estatus dentro de la comunidad, autoestima*\n*6* si tu respuesta es: *Otro*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waittp9",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap5_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap5_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 4030,
+          "y": 5040
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap5_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap5",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap6_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5",
+              "arguments": [
+                "{{widgets.soc_cap5.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5, 1, 2, 3, 4, 5,1 ,2 ,3 ,4 ,5 "
+            }
+          ]
+        },
+        {
+          "next": "soc_cap6",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "6",
+              "arguments": [
+                "{{widgets.soc_cap5.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "6"
+            }
+          ]
+        },
+        {
+          "next": "soc_cap6_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap5.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap5.inbound.Body}}",
+        "offset": {
+          "x": 4480,
+          "y": 5050
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap5",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_cap5",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_ soc_cap5  -%}\n{{flow.variables.set_ soc_cap5 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap5"
+          }
+        ],
+        "offset": {
+          "x": 5010,
+          "y": 5040
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_cap5",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap5",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap6_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap5}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap5}}",
+        "offset": {
+          "x": 5510,
+          "y": 5060
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap5",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait11_b",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait11_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 5930,
+          "y": 5060
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_wait11_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap5",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap5",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 6300,
+          "y": 5060
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap6",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waitd4",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3590,
+          "y": 5290
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuál otro beneficio?",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waitd4",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap6_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap6_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 4030,
+          "y": 5290
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap6_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap6",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap6_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Texto",
+              "arguments": [
+                "{{widgets.soc_cap6.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9_ ]*$"
+            }
+          ]
+        },
+        {
+          "next": "soc_cap6_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap6.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap6.inbound.Body}}",
+        "offset": {
+          "x": 4490,
+          "y": 5290
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap6",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_cap6",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_cap6 -%}\n{{flow.variables.set_soc_cap6 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap6"
+          }
+        ],
+        "offset": {
+          "x": 5010,
+          "y": 5280
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_cap6",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap6",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap6_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap6}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap6}}",
+        "offset": {
+          "x": 5510,
+          "y": 5280
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap6",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitd5",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitd5",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 5930,
+          "y": 5290
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar palabras o números sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitd5",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap6",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap6",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 6310,
+          "y": 5280
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap6_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_waittp2",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3620,
+          "y": 5540
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Indica si perteneces a alguno de los siguientes grupos. Si perteneces a más de uno indica el más importante:\n\nEnvía:\n*1*: Cooperativa u otro grupo asociado a su trabajo\n*2*: Grupo religioso o espiritual\n*3*: Grupo financiero o de ahorros\n*4*: Grupo o movimiento político\n*5*: Grupo deportivo\n*6*: Organización no gubernamental o grupo cívico\n*7*: Comité del barrio\n*8*: Ninguno",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_waittp2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap6_1_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap6_1_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 4030,
+          "y": 5530
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap6_1_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "event": "noMatch"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1,2,3,4,5,6,7",
+              "arguments": [
+                "{{widgets.soc_cap6_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,6,7, 1, 2, 3, 4, 5, 6, 7,1 ,2 ,3 ,4 ,5 ,6, 7 "
+            }
+          ]
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "8",
+              "arguments": [
+                "{{widgets.soc_cap6_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "8, 8,8 "
+            }
+          ]
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap6_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap6_1.inbound.Body}}",
+        "offset": {
+          "x": 4480,
+          "y": 5530
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap6_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_cap6_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_ soc_cap6_1  -%}\n{{flow.variables.set_ soc_cap6_1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap6_1"
+          }
+        ],
+        "offset": {
+          "x": 5070,
+          "y": 5550
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_cap6_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap6_1",
+          "event": "noMatch"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap6_1}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap6_1}}",
+        "offset": {
+          "x": 5520,
+          "y": 5550
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap6_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_wait11_c",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_wait11_c",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 5940,
+          "y": 5550
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar únicamente el *número* que se relaciona a tu respuesta.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_wait11_c",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap6_1",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap6_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 6310,
+          "y": 5550
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap11",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "Copy_of_funcion_waite5",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3590,
+          "y": 6650
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Si necesitaras una pequeña cantidad de dinero, suficiente para pagar tus gastos del hogar por una semana: \n\n*¿cuántas personas que no hagan parte de tu hogar estarían dispuestas a prestarte ese dinero?*\n\n_Responde un número_.",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "Copy_of_funcion_waite5",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap11_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap11_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 4020,
+          "y": 6650
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap11_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap11",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap12",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Numero",
+              "arguments": [
+                "{{widgets.soc_cap11.inbound.Body}}"
+              ],
+              "type": "less_than",
+              "value": "101"
+            }
+          ]
+        },
+        {
+          "next": "soc_cap12",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap11.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap11.inbound.Body}}",
+        "offset": {
+          "x": 4480,
+          "y": 6650
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap11",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_cap11",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_cap11 -%}\n{{flow.variables.set_soc_cap11 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap11"
+          }
+        ],
+        "offset": {
+          "x": 5040,
+          "y": 6650
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_cap11",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap11",
+          "event": "noMatch"
+        },
+        {
+          "next": "soc_cap12",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap11}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap11}}",
+        "offset": {
+          "x": 5500,
+          "y": 6670
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap11",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "Copy_of_funcion_waite6",
+          "event": "sent"
+        },
+        {
+          "next": "Copy_of_funcion_waite6",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 5910,
+          "y": 6650
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, envía sólo números sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "Copy_of_funcion_waite6",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap11",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap11",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 6300,
+          "y": 6650
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap12",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "Copy_of_Copy_of_funcion_waite5",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3590,
+          "y": 6920
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Del número de personas que estarían dispuestas a prestarte ese dinero:\n\n*¿cuántas están en capacidad de prestártelo?*\n\n_Responde un número_",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "Copy_of_Copy_of_funcion_waite5",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap12_split",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap12_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 4020,
+          "y": 6920
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "soc_cap12_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_soc_cap12",
+          "event": "noMatch"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Numero",
+              "arguments": [
+                "{{widgets.soc_cap12.inbound.Body}}"
+              ],
+              "type": "less_than",
+              "value": "101"
+            }
+          ]
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.soc_cap12.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.soc_cap12.inbound.Body}}",
+        "offset": {
+          "x": 4480,
+          "y": 6920
+        }
+      }
+    },
+    {
+      "name": "set_soc_cap12",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_soc_cap12",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_soc_cap12 -%}\n{{flow.variables.set_soc_cap12 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_soc_cap12"
+          }
+        ],
+        "offset": {
+          "x": 5000,
+          "y": 6910
+        }
+      }
+    },
+    {
+      "name": "split_count_soc_cap12",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_soc_cap12",
+          "event": "noMatch"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_soc_cap12}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_soc_cap12}}",
+        "offset": {
+          "x": 5500,
+          "y": 6940
+        }
+      }
+    },
+    {
+      "name": "fail_soc_cap12",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "Copy_of_Copy_of_funcion_waite6",
+          "event": "sent"
+        },
+        {
+          "next": "Copy_of_Copy_of_funcion_waite6",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 5910,
+          "y": 6920
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, envía sólo números sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "Copy_of_Copy_of_funcion_waite6",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "soc_cap12",
+          "event": "success"
+        },
+        {
+          "next": "soc_cap12",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 6300,
+          "y": 6920
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "control_3",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "funcion_wait_1",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -670,
+          "y": 6920
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuál fue el motivo por el que dejaste de ver *alguno* de los videos?\n\nEnvía:\n*1* si tu respuesta es *Me cansé de recibir tantos mensajes*\n*2* si tu respuesta es *No me interesa saber más del Sisbén*\n*3* si tu respuesta es *No tuve tiempo para ver los videos*\n*4* si tu respuesta es *No tengo wifi/datos para reproducir videos*\n*5* si tu respuesta es *No tengo acceso al celular (me lo robaron, se dañó, lo tiene otra persona)*\n*6* si tu respuesta es *Otro motivo*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "funcion_wait_1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "control_3_split",
+          "event": "success"
+        },
+        {
+          "next": "control_3_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -260,
+          "y": 6920
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "set_control_3",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_control_3",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_control_3 -%}\n{{flow.variables.set_control_3 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_control_3"
+          }
+        ],
+        "offset": {
+          "x": 750,
+          "y": 6920
+        }
+      }
+    },
+    {
+      "name": "split_count_control_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_control_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_control_3}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_control_3}}",
+        "offset": {
+          "x": 1200,
+          "y": 6930
+        }
+      }
+    },
+    {
+      "name": "fail_control_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitd",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitd",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": 6920
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar palabras o números sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitd",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "control_3",
+          "event": "success"
+        },
+        {
+          "next": "control_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2000,
+          "y": 6920
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "control_3_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_control_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Todos",
+              "arguments": [
+                "{{widgets.control_3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5, 1, 2, 3, 4, 5,1 ,2 ,3 ,4,5  "
+            }
+          ]
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.control_3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        },
+        {
+          "next": "control_2_3_otro",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Otro",
+              "arguments": [
+                "{{widgets.control_3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "6,6 , 6,otro,Otro,OTRO"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.control_3.inbound.Body}}",
+        "offset": {
+          "x": 190,
+          "y": 6920
+        }
+      }
+    },
+    {
+      "name": "Copy_of_split_count_control_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "event": "noMatch"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_control_3}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_control_3}}",
+        "offset": {
+          "x": 1240,
+          "y": 12230
+        }
+      }
+    },
+    {
+      "name": "control_2_3_otro",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "Copy_of_funcion_waitd2",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -670,
+          "y": 7160
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuál fue ese otro motivo?\n\n_Escribe tu respuesta_",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "Copy_of_funcion_waitd2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "sisben_control_2_3_otro_split",
+          "event": "success"
+        },
+        {
+          "next": "sisben_control_2_3_otro_split",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -240,
+          "y": 7160
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "sisben_control_2_3_otro_split",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_control_2_3_otro",
+          "event": "noMatch"
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Texto",
+              "arguments": [
+                "{{widgets.control_2_3_otro.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9_ ]*$"
+            }
+          ]
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Omitir",
+              "arguments": [
+                "{{widgets.control_2_3_otro.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "omitir,Omitir,OMITIR"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.control_2_3_otro.inbound.Body}}",
+        "offset": {
+          "x": 200,
+          "y": 7160
+        }
+      }
+    },
+    {
+      "name": "set_control_2_3_otro",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_count_control_2_3_otro",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_control_2_3_otro -%}\n{{flow.variables.set_control_2_3_otro | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_control_2_3_otro"
+          }
+        ],
+        "offset": {
+          "x": 780,
+          "y": 7160
+        }
+      }
+    },
+    {
+      "name": "split_count_control_2_3_otro",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "fail_control_2_3_otro",
+          "event": "noMatch"
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">4",
+              "arguments": [
+                "{{flow.variables.set_control_2_3_otro}}"
+              ],
+              "type": "greater_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_control_2_3_otro}}",
+        "offset": {
+          "x": 1230,
+          "y": 7160
+        }
+      }
+    },
+    {
+      "name": "fail_control_2_3_otro",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "funcion_waitd6",
+          "event": "sent"
+        },
+        {
+          "next": "funcion_waitd6",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1650,
+          "y": 7160
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No logro entender tu respuesta, recuerda enviar palabras sin comas ni puntos.\n\nSoy un robot y no puedo entender otro tipo de respuestas."
+      }
+    },
+    {
+      "name": "funcion_waitd6",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "control_2_3_otro",
+          "event": "success"
+        },
+        {
+          "next": "control_2_3_otro",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2030,
+          "y": 7160
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    },
+    {
+      "name": "split_tratamiento",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "conf_identity",
+          "event": "noMatch"
+        },
+        {
+          "next": "conf_identity",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Control",
+              "arguments": [
+                "{{flow.data.grupo_tratamiento}}"
+              ],
+              "type": "equal_to",
+              "value": "0"
+            }
+          ]
+        },
+        {
+          "next": "control",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "SMS",
+              "arguments": [
+                "{{flow.data.grupo_tratamiento}}"
+              ],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "next": "control",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "WA",
+              "arguments": [
+                "{{flow.data.grupo_tratamiento}}"
+              ],
+              "type": "equal_to",
+              "value": "2"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.data.grupo_tratamiento}}",
+        "offset": {
+          "x": -1120,
+          "y": 6170
+        }
+      }
+    },
+    {
+      "name": "control",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "Copy_of_funcion_wait_d3",
+          "event": "sent"
+        },
+        {
+          "next": "Copy_of_funcion_wait_d3",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -680,
+          "y": 6170
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hace un par de semanas, te enviamos cuatro mensajes con videos sobre el Sisbén, a continuación te preguntaremos sobre tu interacción con esos videos."
+      }
+    },
+    {
+      "name": "Copy_of_funcion_wait_d3",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "control_1",
+          "event": "success"
+        },
+        {
+          "next": "control_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -340,
+          "y": 6170
+        },
+        "function_sid": "ZH79d4f072caf67c0d6d76ccd86cb5f668",
+        "url": "https://aletorio-1295.twil.io/wait"
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
