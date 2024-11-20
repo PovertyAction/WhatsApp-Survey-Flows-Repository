@@ -1,0 +1,3195 @@
+{
+  "description": "FIM_screening",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "next": "incoming_message",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "next": "welcome",
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -300,
+          "y": -900
+        }
+      }
+    },
+    {
+      "name": "espera_1_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_time_ini",
+          "event": "success"
+        },
+        {
+          "next": "set_time_ini",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 0,
+          "y": -580
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "set_initial_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_fail-%}\n{{flow.variables.set_initial_fail| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_fail"
+          }
+        ],
+        "offset": {
+          "x": 2550,
+          "y": 2520
+        }
+      }
+    },
+    {
+      "name": "set_initial_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_no_reply-%}\n{{flow.variables.set_initial_no_reply| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 2550,
+          "y": 2700
+        }
+      }
+    },
+    {
+      "name": "set_initial_multierror",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_multierror-%}\n{{flow.variables.set_initial_multierror| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_multierror"
+          }
+        ],
+        "offset": {
+          "x": 2550,
+          "y": 2350
+        }
+      }
+    },
+    {
+      "name": "incoming_message",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -920,
+          "y": -830
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Este canal de comunicación no está habilitado para la recepción de mensajes."
+      }
+    },
+    {
+      "name": "verif_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_2_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "verif_1_reminder",
+          "event": "timeout"
+        },
+        {
+          "next": "set_intro_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -910,
+          "y": 500
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "_A partir de ahora, dispone de 27 horas para finalizar la encuesta._  ⏰ \n\n¿Es usted {{flow.data.name}}?\n\nMarque *1* si *SÍ* es usted\nMarque *2* si *NO* es usted\nMarque *3* si *NO* está interesado/a y no quiere que lo/a volvamos a contactar",
+        "timeout": "21600"
+      }
+    },
+    {
+      "name": "espera_2_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -610,
+          "y": 500
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_v_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.verif_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "bye_note_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.verif_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*2*,*2.*,2, 2,2 ,2.,dos,DOS,dos ,DOS , dos, DOS,dos.,DOS.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*2*,*2.*,2, 2,2 ,2.,dos,DOS,dos ,DOS , dos, DOS,dos.,DOS.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.,,*3*,*3.*,3, 3,3 ,3.,tres,TRES,tres ,TRES , tres, TRES,tres.,TRES."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_1.inbound.Body}}",
+        "offset": {
+          "x": -310,
+          "y": 500
+        }
+      }
+    },
+    {
+      "name": "counter_error_v_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_v_1 -%}\n{{flow.variables.counter_error_v_1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_v_1"
+          }
+        ],
+        "offset": {
+          "x": -10,
+          "y": 500
+        }
+      }
+    },
+    {
+      "name": "split_error_v_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_intro_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_v_1}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_v_1}}",
+        "offset": {
+          "x": 300,
+          "y": 490
+        }
+      }
+    },
+    {
+      "name": "error_message_v_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_2_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_2_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 590,
+          "y": 500
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1 o 2.*\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "verif_1_reminder",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_3_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "verif_1_rem1",
+          "event": "timeout"
+        },
+        {
+          "next": "set_intro_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -910,
+          "y": 720
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "_Recuerde que todavía tiene tiempo hasta mañana por la mañana para hacer esta encuesta_. ⏰ \n\n¿Es usted {{flow.data.name}}? \n\nMarque *1* si *SÍ* es usted \nMarque *2* si *NO* es usted\nMarque *3* si *NO* está interesado/a y no quiere que lo/a volvamos a contactar",
+        "timeout": "46800"
+      }
+    },
+    {
+      "name": "counter_error_v_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_v_2 -%}\n{{flow.variables.counter_error_v_2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_v_2"
+          }
+        ],
+        "offset": {
+          "x": -10,
+          "y": 720
+        }
+      }
+    },
+    {
+      "name": "espera_3_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_reminder1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_reminder1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -610,
+          "y": 720
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "espera_2_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_1",
+          "event": "success"
+        },
+        {
+          "next": "verif_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 890,
+          "y": 500
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_reminder1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_v_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.verif_1_reminder.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "bye_note_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.verif_1_reminder.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*2*,*2.*,2, 2,2 ,2.,dos,DOS,dos ,DOS , dos, DOS,dos.,DOS.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.,,*3*,*3.*,3, 3,3 ,3.,tres,TRES,tres ,TRES , tres, TRES,tres.,TRES."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_1_reminder.inbound.Body}}",
+        "offset": {
+          "x": -310,
+          "y": 720
+        }
+      }
+    },
+    {
+      "name": "split_error_v_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_intro_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_v_2}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_v_2}}",
+        "offset": {
+          "x": 290,
+          "y": 720
+        }
+      }
+    },
+    {
+      "name": "error_message_v_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_3_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_3_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 610,
+          "y": 710
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1 o 2.*\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_3_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_1_reminder",
+          "event": "success"
+        },
+        {
+          "next": "verif_1_reminder",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 890,
+          "y": 720
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_dob_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_12_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -900,
+          "y": 1650
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "{{flow.data.name}}, para validar/corroborar que nos estamos comunicando con usted, por favor ingrese su año de nacimiento. El Sisbén nos compartió esta información.\n\nPor favor, ingrese únicamente el número del año en el usted que nació, en números, sin puntos (.) ni comas (,) ni espacios ( ).\n\nPor ejemplo: *1990*",
+        "timeout": "43200"
+      }
+    },
+    {
+      "name": "espera_12_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_dob_1_1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_dob_1_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -600,
+          "y": 1650
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_1_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_v_11",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_verif_dob_1_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "number",
+              "arguments": [
+                "{{widgets.verif_dob_1.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[1-2][0-9]{3}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_1.inbound.Body}}",
+        "offset": {
+          "x": -300,
+          "y": 1650
+        }
+      }
+    },
+    {
+      "name": "counter_error_v_11",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_11",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_v_11 -%}\n{{flow.variables.counter_error_v_11 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_v_11"
+          }
+        ],
+        "offset": {
+          "x": 0,
+          "y": 1650
+        }
+      }
+    },
+    {
+      "name": "split_error_v_11",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_11",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_v_11}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_v_11}}",
+        "offset": {
+          "x": 300,
+          "y": 1650
+        }
+      }
+    },
+    {
+      "name": "error_message_v_11",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_12_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_12_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 600,
+          "y": 1650
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor *ingrese únicamente el número de su año de nacimiento*, en números, sin puntos(.) ni comas(,). Recuerde que deben ser 4 dígitos.\n\nPor ejemplo: *1990*\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_12_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_1",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 900,
+          "y": 1650
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_1_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "verif_dob_1_err1",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "year",
+              "arguments": [
+                "{{widgets.verif_dob_1.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.year}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_1.inbound.Body}}",
+        "offset": {
+          "x": -300,
+          "y": 1870
+        }
+      }
+    },
+    {
+      "name": "verif_dob_1_err1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_13_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -900,
+          "y": 2090
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "El año de su nacimiento que usted ingres���, {{flow.data.name}}, no coincide con el registrado en el _Sisbén_. Por favor, *intente nuevamente*.\n\nRecuerde ingresar solamente el año en el usted que nació, en números, sin puntos (.) ni comas (,) ni espacios ( ).\n\nPor ejemplo: *1990*",
+        "timeout": "43200"
+      }
+    },
+    {
+      "name": "espera_13_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_dob_1_err1_1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_dob_1_err1_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -600,
+          "y": 2090
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_1_err1_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_v_12",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_verif_dob_1_err1_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "number",
+              "arguments": [
+                "{{widgets.verif_dob_1_err1.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[1-2][0-9]{3}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_1_err1.inbound.Body}}",
+        "offset": {
+          "x": -300,
+          "y": 2090
+        }
+      }
+    },
+    {
+      "name": "counter_error_v_12",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_12",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_v_12 -%}\n{{flow.variables.counter_error_v_12 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_v_12"
+          }
+        ],
+        "offset": {
+          "x": 0,
+          "y": 2090
+        }
+      }
+    },
+    {
+      "name": "split_error_v_12",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_12",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_v_12}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_v_12}}",
+        "offset": {
+          "x": 300,
+          "y": 2090
+        }
+      }
+    },
+    {
+      "name": "error_message_v_12",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_13_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_13_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 600,
+          "y": 2090
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor *ingrese únicamente el número de su año de nacimiento*, en números, sin puntos(.) ni comas(,). Recuerde que deben ser 4 dígitos.\n\nPor ejemplo: *1990*\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_13_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_1_err1",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_1_err1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 900,
+          "y": 2090
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_1_err1_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "espera_14_a",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "year",
+              "arguments": [
+                "{{widgets.verif_dob_1_err1.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.year}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_1_err1.inbound.Body}}",
+        "offset": {
+          "x": -300,
+          "y": 2310
+        }
+      }
+    },
+    {
+      "name": "verif_dob_1_err2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_15_a",
+          "event": "sent"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -900,
+          "y": 2530
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Lo sentimos, pero el año de nacimiento que usted ha ingresado, {{flow.data.name}}, sigue *sin coincidir* con el registrado en el _Sisbén_. Por lo tanto, no hemos podido validar su identidad."
+      }
+    },
+    {
+      "name": "espera_14_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_1_err2",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_1_err2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 0,
+          "y": 2310
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_dob_2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_16_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -900,
+          "y": 2750
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Ahora, {{flow.data.name}}, por favor marque *el número al que corresponda su mes de nacimiento* para terminar el proceso de validación.\n\nMarque *1* si es *Enero*\nMarque *2* si es *Febrero*\nMarque *3* si es *Marzo*\nMarque *4* si es *Abril*\nMarque *5* si es *Mayo*\nMarque *6* si es *Junio*\nMarque *7* si es *Julio*\nMarque *8* si es *Agosto*\nMarque *9* si es *Septiembre*\nMarque *10* si es *Octubre*\nMarque *11* si es *Noviembre*\nMarque *12* si es *Diciembre*",
+        "timeout": "43200"
+      }
+    },
+    {
+      "name": "espera_16_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_dob_2_1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_dob_2_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -600,
+          "y": 2750
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_2_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_v_13",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_verif_dob_2_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "number",
+              "arguments": [
+                "{{widgets.verif_dob_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,6,7,8,9,10,11,12,01,02,03,04,05,06,07,08,09"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2.inbound.Body}}",
+        "offset": {
+          "x": -300,
+          "y": 2750
+        }
+      }
+    },
+    {
+      "name": "counter_error_v_13",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_13",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_v_13 -%}\n{{flow.variables.counter_error_v_13 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_v_13"
+          }
+        ],
+        "offset": {
+          "x": 0,
+          "y": 2750
+        }
+      }
+    },
+    {
+      "name": "split_error_v_13",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_13",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_v_13}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_v_13}}",
+        "offset": {
+          "x": 300,
+          "y": 2750
+        }
+      }
+    },
+    {
+      "name": "error_message_v_13",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_16_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_16_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 600,
+          "y": 2750
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor *ingrese únicamente el número al que corresponde el mes de su nacimiento*, en números, sin puntos(.) ni comas(,).\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_16_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_2",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 900,
+          "y": 2750
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_2_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "split_verif_dob_2_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_verif_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "month",
+              "arguments": [
+                "{{widgets.verif_dob_2.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.month}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2.inbound.Body}}",
+        "offset": {
+          "x": -300,
+          "y": 2970
+        }
+      }
+    },
+    {
+      "name": "verif_dob_2_err1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_17_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -900,
+          "y": 3190
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "El mes de nacimiento que usted ingresó, {{flow.data.name}}, no coincide con el registrado en el _Sisbén_. \n\nPor favor, marque únicamente *el número al que corresponda su mes de nacimiento*. \n  \nMarque *1* si es *Enero*\nMarque *2* si es *Febrero*\nMarque *3* si es *Marzo*\nMarque *4* si es *Abril*\nMarque *5* si es *Mayo*\nMarque *6* si es *Junio*\nMarque *7* si es *Julio*\nMarque *8* si es *Agosto*\nMarque *9* si es *Septiembre*\nMarque *10* si es *Octubre*\nMarque *11* si es *Noviembre*\nMarque *12* si es *Diciembre*",
+        "timeout": "43200"
+      }
+    },
+    {
+      "name": "espera_17_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_dob_2_err1_1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_dob_2_err1_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -600,
+          "y": 3190
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_2_err1_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_v_14",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_verif_dob_2_err1_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "number",
+              "arguments": [
+                "{{widgets.verif_dob_2_err1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,6,7,8,9,10,11,12,01,02,03,04,05,06,07,08,09"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+        "offset": {
+          "x": -300,
+          "y": 3190
+        }
+      }
+    },
+    {
+      "name": "counter_error_v_14",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_14",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_v_14 -%}\n{{flow.variables.counter_error_v_14 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_v_14"
+          }
+        ],
+        "offset": {
+          "x": 0,
+          "y": 3190
+        }
+      }
+    },
+    {
+      "name": "split_error_v_14",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_14",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_v_14}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_v_14}}",
+        "offset": {
+          "x": 300,
+          "y": 3190
+        }
+      }
+    },
+    {
+      "name": "error_message_v_14",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_17_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_17_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 600,
+          "y": 3190
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor *ingrese únicamente el número al que corresponde el mes de su nacimiento*, en números, sin puntos(.) ni comas(,).\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_17_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_2_err1",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_2_err1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 900,
+          "y": 3190
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_2_err1_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "split_verif_dob_2_err1_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_verif_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "month",
+              "arguments": [
+                "{{widgets.verif_dob_2_err1.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.month}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+        "offset": {
+          "x": -300,
+          "y": 3410
+        }
+      }
+    },
+    {
+      "name": "espera_15_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_verif_wrong_dob",
+          "event": "success"
+        },
+        {
+          "next": "set_verif_wrong_dob",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -600,
+          "y": 2530
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_dob_2_err2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_19_a",
+          "event": "sent"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -900,
+          "y": 3630
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Lo sentimos, pero el mes de nacimiento que usted ha ingresado, {{flow.data.name}}, sigue *sin coincidir* con el registrado en el _Sisbén_. Por lo tanto, no hemos podido validar su identidad."
+      }
+    },
+    {
+      "name": "espera_19_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_verif_wrong_dob",
+          "event": "success"
+        },
+        {
+          "next": "set_verif_wrong_dob",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -600,
+          "y": 3630
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "set_verif_complete",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_questionaire_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_verif_complete -%}\n{{flow.variables.set_verif_complete | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_verif_complete"
+          }
+        ],
+        "offset": {
+          "x": -300,
+          "y": 3880
+        }
+      }
+    },
+    {
+      "name": "bye_note_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "split_questionaire_2",
+          "event": "sent"
+        },
+        {
+          "next": "split_questionaire_2",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 330,
+          "y": 4130
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Muchas gracias por su tiempo. Que tenga un buen resto de día.\n\n_IPA Colombia_"
+      }
+    },
+    {
+      "name": "espera_err_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "bye_note_1",
+          "event": "success"
+        },
+        {
+          "next": "bye_note_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 2570,
+          "y": 2920
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "bye_note_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "split_questionaire_2",
+          "event": "sent"
+        },
+        {
+          "next": "split_questionaire_2",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 740,
+          "y": 4130
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Muchas gracias por su tiempo.⌚\n\nQue tenga un buen resto de día.\n\n_IPA Colombia_"
+      }
+    },
+    {
+      "name": "split_verif_dob_2_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "verif_dob_2_err1",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_verif_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "month",
+              "arguments": [
+                "{{widgets.verif_dob_2.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.month_cero}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2.inbound.Body}}",
+        "offset": {
+          "x": 0,
+          "y": 2970
+        }
+      }
+    },
+    {
+      "name": "split_verif_dob_2_err1_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "verif_dob_2_err2",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_verif_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "month",
+              "arguments": [
+                "{{widgets.verif_dob_2_err1.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.month_cero}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+        "offset": {
+          "x": 0,
+          "y": 3410
+        }
+      }
+    },
+    {
+      "name": "set_time_ini",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_questionaire",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{{'now' | date: \"%m %d %Z %k %M %S\"}}",
+            "key": "set_time_ini"
+          }
+        ],
+        "offset": {
+          "x": 300,
+          "y": -580
+        }
+      }
+    },
+    {
+      "name": "welcome_piloto_scr",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "verif_1_pilot",
+          "event": "sent"
+        },
+        {
+          "next": "verif_1_pilot",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -580,
+          "y": -1310
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Hola👋! *Somos _IPA Colombia_* 🇨🇴. El _Sisbén_ nos compartió su información de contacto para invitarle a participar en una *encuesta para un estudio de investigación de _IPA_* 🌎.\n\n*Si usted termina haciendo parte de este estudio, participará en la rifa de un bono Sodexo por un valor de $40.000 pesos*. Contactaremos al ganador en septiembre y anunciaremos los resultados a todos los participantes.\n\nAntes de responder la encuesta, nos gustaría validar su identidad. Por favor lea atentamente las instrucciones y *conteste únicamente con el número asignado a la opción de respuesta de cada pregunta*."
+      }
+    },
+    {
+      "name": "verif_1_pilot",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "verif_1_rem1_pilot",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "verif_1_rem1_pilot",
+          "event": "timeout"
+        },
+        {
+          "next": "verif_1_rem1_pilot",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -280,
+          "y": -1310
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "_Podrá responder a esta encuesta hasta el domingo en la tarde_⏳.\n\n¿Es usted {{flow.data.name}}?\n\nResponda con el número:\n\n*1*  SÍ es usted\n*2*  NO es usted",
+        "timeout": "86400"
+      }
+    },
+    {
+      "name": "verif_1_rem1_pilot",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "verif_1_rem3",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "verif_1_rem3",
+          "event": "timeout"
+        },
+        {
+          "next": "verif_1_rem3",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 20,
+          "y": -1310
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Ha pasado un rato, queremos saber si nos estamos comunicando con {{flow.data.name}}. _Podrá responder a esta encuesta hasta el domingo en la tarde_⏳.\n\n¿Es usted {{flow.data.name}}?\n\nResponda con el número:\n\n*1*  SÍ es usted\n*2*  NO es usted",
+        "timeout": "86400"
+      }
+    },
+    {
+      "name": "verif_1_rem1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "esperaa_3_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_intro_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_intro_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -910,
+          "y": 940
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "_Aún puede completar la encuesta en las siguientes 6 horas_⌛. \n\n¿Es usted {{flow.data.name}}?\n\nMarque *1* si *SÍ* es usted\nMarque *2* si *NO* es usted\nMarque *3* si *NO* está interesado/a y no quiere que lo/a volvamos a contactar",
+        "media_url": "",
+        "timeout": "21600"
+      }
+    },
+    {
+      "name": "esperaa_3_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_reminder2",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_reminder2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -610,
+          "y": 940
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_reminder2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counterr_error_v_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.verif_1_rem1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO."
+            }
+          ]
+        },
+        {
+          "next": "bye_note_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.verif_1_rem1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "**2*,*2.*,2, 2,2 ,2.,dos,DOS,dos ,DOS , dos, DOS,dos.,DOS.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.,,*3*,*3.*,3, 3,3 ,3.,tres,TRES,tres ,TRES , tres, TRES,tres.,TRES."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_1_rem1.inbound.Body}}",
+        "offset": {
+          "x": -310,
+          "y": 940
+        }
+      }
+    },
+    {
+      "name": "counterr_error_v_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "splitt_error_v_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counterr_error_v_2 -%}\n{{flow.variables.counterr_error_v_2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counterr_error_v_2"
+          }
+        ],
+        "offset": {
+          "x": -10,
+          "y": 940
+        }
+      }
+    },
+    {
+      "name": "splitt_error_v_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_intro_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "errorr_message_v_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counterr_error_v_2}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counterr_error_v_2}}",
+        "offset": {
+          "x": 290,
+          "y": 940
+        }
+      }
+    },
+    {
+      "name": "errorr_message_v_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "esperaa_3_b",
+          "event": "sent"
+        },
+        {
+          "next": "esperaa_3_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 590,
+          "y": 940
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1 o 2.*\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "esperaa_3_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_1_rem1",
+          "event": "success"
+        },
+        {
+          "next": "verif_1_rem1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 890,
+          "y": 940
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_1_rem3",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "welcome_piloto_scr",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "welcome_piloto_scr",
+          "event": "timeout"
+        },
+        {
+          "next": "welcome_piloto_scr",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 320,
+          "y": -1310
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Ha pasado un rato, queremos saber si nos estamos comunicando con {{flow.data.name}}. _Está encuesta sólo estará abierta por 24 horas más_⏳. \n\n¿Es usted {{flow.data.name}}?\n\nResponda con el número:\n\n*1*  SÍ es usted\n*2*  NO es usted",
+        "timeout": "86400"
+      }
+    },
+    {
+      "name": "pre_consent_pilot",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "pre_consent2_pilot",
+          "event": "sent"
+        },
+        {
+          "next": "pre_consent2_pilot",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 700,
+          "y": -1320
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Perfecto! {{flow.data.name}}, ahora que hemos validado su identidad, le *invitamos a participar en la primera encuesta de un estudio de investigación de _IPA_*, cuyo objetivo es mejorar el acceso a información de programas sociales para la población venezolana en Colombia. La encuesta *le tomará de 4 a 8 minutos*.\n\nPuede dejar de responder en cualquier momento, o saltar cualquier pregunta que prefiera no responder escribiendo *omitir*. No hay penalización por esto, y no perderá ningún beneficio que reciba actualmente."
+      }
+    },
+    {
+      "name": "pre_consent2_pilot",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "pre_consent_pilot",
+          "event": "sent"
+        },
+        {
+          "next": "pre_consent_pilot",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1000,
+          "y": -1320
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por último, *por favor tenga en cuenta que esta encuesta es sólo una parte de un estudio más grande*. En este podría recibir mensajes y otra encuesta.\n\nPara más información sobre este _consentimiento informado_ *ingrese al siguiente link*:  https://bit.ly/consent_ipa_p_CFM_2023",
+        "media_url": ""
+      }
+    },
+    {
+      "name": "set_intro_multierror",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro_multierror -%}\n{{flow.variables.set_intro_multierror | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_intro_multierror"
+          }
+        ],
+        "offset": {
+          "x": 2500,
+          "y": 590
+        }
+      }
+    },
+    {
+      "name": "set_intro_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro_fail -%}\n{{flow.variables.set_intro_fail | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_intro_fail"
+          }
+        ],
+        "offset": {
+          "x": 2500,
+          "y": 780
+        }
+      }
+    },
+    {
+      "name": "set_intro_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro_no_reply -%}\n{{flow.variables.set_intro_no_reply | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_intro_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 2500,
+          "y": 950
+        }
+      }
+    },
+    {
+      "name": "set_verif_wrong_dob",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "bye_note_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_verif_wrong_dob -%}\n{{flow.variables.set_verif_wrong_dob | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_verif_wrong_dob"
+          }
+        ],
+        "offset": {
+          "x": 0,
+          "y": 3880
+        }
+      }
+    },
+    {
+      "name": "split_questionaire",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_fail",
+          "event": "noMatch"
+        },
+        {
+          "next": "welcome_bs_ven",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "bs_ven",
+              "arguments": [
+                "{{flow.data.arm}}"
+              ],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "next": "welcome_bs_col",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "bs_col",
+              "arguments": [
+                "{{flow.data.arm}}"
+              ],
+              "type": "equal_to",
+              "value": "3"
+            }
+          ]
+        },
+        {
+          "next": "welcome_pilot_elic",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "pilot_elic",
+              "arguments": [
+                "{{flow.data.arm}}"
+              ],
+              "type": "equal_to",
+              "value": "2"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.data.arm}}",
+        "offset": {
+          "x": -300,
+          "y": -360
+        }
+      }
+    },
+    {
+      "name": "welcome_bs_ven",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_welcome_bs_ven",
+          "event": "sent"
+        },
+        {
+          "next": "set_intro_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -910,
+          "y": 30
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Si completa esta encuesta y participa en otra encuesta telefónica que se realizará entre junio y julio, *recibirá una recarga telefónica de $20.000 pesos* a cualquier número de celular que usted prefiera.  📳"
+      }
+    },
+    {
+      "name": "espera_welcome_bs_ven",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_1",
+          "event": "success"
+        },
+        {
+          "next": "verif_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -610,
+          "y": 30
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "espera_bs_col",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_1",
+          "event": "success"
+        },
+        {
+          "next": "verif_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -10,
+          "y": 30
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "welcome_bs_col",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_bs_col",
+          "event": "sent"
+        },
+        {
+          "next": "set_intro_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -310,
+          "y": 30
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Al completar esta encuesta y participar en otra telefónica que se llevará a cabo entre junio y julio, *recibirá como agradecimiento una recarga telefónica de $20.000 COP pesos para el número celular que prefiera.*  📳"
+      }
+    },
+    {
+      "name": "espera_welcome_pilot_elic",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_1",
+          "event": "success"
+        },
+        {
+          "next": "verif_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 590,
+          "y": 30
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "welcome_pilot_elic",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_welcome_pilot_elic",
+          "event": "sent"
+        },
+        {
+          "next": "set_intro_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 290,
+          "y": 30
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "En agradecimiento por su tiempo y participación en esta encuesta, le entregaremos una *recarga telefónica por un valor de $5.000 COP al número telefónico de su preferencia al completarla.*  📳"
+      }
+    },
+    {
+      "name": "split_questionaire_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_fail",
+          "event": "noMatch"
+        },
+        {
+          "next": "run_subflow_bsv",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "bsv",
+              "arguments": [
+                "{{flow.data.arm}}"
+              ],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "next": "run_subflow_elic",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "elic",
+              "arguments": [
+                "{{flow.data.arm}}"
+              ],
+              "type": "equal_to",
+              "value": "2"
+            }
+          ]
+        },
+        {
+          "next": "run_subflow_bsc",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "bsc",
+              "arguments": [
+                "{{flow.data.arm}}"
+              ],
+              "type": "equal_to",
+              "value": "3"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.data.arm}}",
+        "offset": {
+          "x": -300,
+          "y": 4180
+        }
+      }
+    },
+    {
+      "name": "run_subflow_bsc",
+      "type": "run-subflow",
+      "transitions": [
+        {
+          "event": "completed"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "flow_sid": "FWf63d1621ed15b753fab8272e1988f77c",
+        "flow_revision": "LatestPublished",
+        "offset": {
+          "x": 120,
+          "y": 4400
+        },
+        "parameters": [
+          {
+            "type": "string",
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.num_tel_contacto}}",
+            "key": "num_tel_contacto"
+          },
+          {
+            "type": "string",
+            "value": "{{name}}",
+            "key": "name"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.Number}}",
+            "key": "Number"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.year}}",
+            "key": "year"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.month}}",
+            "key": "month"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.month_cero}}",
+            "key": "month_cero"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.num_tel_contacto}}",
+            "key": "num_tel_contacto"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.arm}}",
+            "key": "arm"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.sexo_persona}}",
+            "key": "sexo_persona"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.age}}",
+            "key": "age"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.niv_educativo}}",
+            "key": "niv_educativo"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.cod_mpio}}",
+            "key": "cod_mpio"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.ntest}}",
+            "key": "ntest"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.wave}}",
+            "key": "wave"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.day}}",
+            "key": "day"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.console}}",
+            "key": "console"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_1.inbound.Body}}",
+            "key": "verif_1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_1_reminder.inbound.Body}}",
+            "key": "verif_1_reminder"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_1_rem1.inbound.Body}}",
+            "key": "verif_1_rem1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_1.inbound.Body}}",
+            "key": "verif_dob_1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_1_err1.inbound.Body}}",
+            "key": "verif_dob_1_err1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_1_err2.inbound.Body}}",
+            "key": "verif_dob_1_err2"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_2.inbound.Body}}",
+            "key": "verif_dob_2"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+            "key": "verif_dob_2_err1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_2_err2.inbound.Body}}",
+            "key": "verif_dob_2_err2"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_intro_multierror}}",
+            "key": "set_intro_multierror"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_intro_fail}}",
+            "key": "set_intro_fail"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_intro_no_reply}}",
+            "key": "set_intro_no_reply"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_verif_complete}}",
+            "key": "set_verif_complete"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_verif_wrong_dob}}",
+            "key": "set_verif_wrong_dob"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_time_ini}}",
+            "key": "set_time_ini"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_initial_multierror}}",
+            "key": "set_initial_multierror"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_initial_fail}}",
+            "key": "set_initial_fail"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_initial_no_reply}}",
+            "key": "set_initial_no_reply"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.caseid}}",
+            "key": "caseid"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.persug}}",
+            "key": "persug"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.grupo}}",
+            "key": "grupo"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.tip_actividad_mes}}",
+            "key": "tip_actividad_mes"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.age_cat}}",
+            "key": "age_cat"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.savings}}",
+            "key": "savings"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.credit}}",
+            "key": "credit"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.checking}}",
+            "key": "checking"
+          }
+        ]
+      }
+    },
+    {
+      "name": "run_subflow_elic",
+      "type": "run-subflow",
+      "transitions": [
+        {
+          "event": "completed"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "flow_sid": "FW10508a544a63625b65857040b32e4d62",
+        "flow_revision": "LatestPublished",
+        "offset": {
+          "x": -300,
+          "y": 4400
+        },
+        "parameters": [
+          {
+            "type": "string",
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.num_tel_contacto}}",
+            "key": "num_tel_contacto"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.Number}}",
+            "key": "Number"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.year}}",
+            "key": "year"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.month}}",
+            "key": "month"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.month_cero}}",
+            "key": "month_cero"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.num_tel_contacto}}",
+            "key": "num_tel_contacto"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.arm}}",
+            "key": "arm"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.sexo_persona}}",
+            "key": "sexo_persona"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.age}}",
+            "key": "age"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.niv_educativo}}",
+            "key": "niv_educativo"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.cod_mpio}}",
+            "key": "cod_mpio"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.ntest}}",
+            "key": "ntest"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.wave}}",
+            "key": "wave"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.day}}",
+            "key": "day"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.console}}",
+            "key": "console"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_1.inbound.Body}}",
+            "key": "verif_1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_1_reminder.inbound.Body}}",
+            "key": "verif_1_reminder"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_1_rem1.inbound.Body}}",
+            "key": "verif_1_rem1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_1.inbound.Body}}",
+            "key": "verif_dob_1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_1_err1.inbound.Body}}",
+            "key": "verif_dob_1_err1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_1_err2.inbound.Body}}",
+            "key": "verif_dob_1_err2"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_2.inbound.Body}}",
+            "key": "verif_dob_2"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+            "key": "verif_dob_2_err1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_2_err2.inbound.Body}}",
+            "key": "verif_dob_2_err2"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_intro_multierror}}",
+            "key": "set_intro_multierror"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_intro_fail}}",
+            "key": "set_intro_fail"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_intro_no_reply}}",
+            "key": "set_intro_no_reply"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_verif_complete}}",
+            "key": "set_verif_complete"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_verif_wrong_dob}}",
+            "key": "set_verif_wrong_dob"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_time_ini}}",
+            "key": "set_time_ini"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_initial_multierror}}",
+            "key": "set_initial_multierror"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_initial_fail}}",
+            "key": "set_initial_fail"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_initial_no_reply}}",
+            "key": "set_initial_no_reply"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.caseid}}",
+            "key": "caseid"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.persug}}",
+            "key": "persug"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.grupo}}",
+            "key": "grupo"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.tip_actividad_mes}}",
+            "key": "tip_actividad_mes"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.age_cat}}",
+            "key": "age_cat"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.savings}}",
+            "key": "savings"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.credit}}",
+            "key": "credit"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.checking}}",
+            "key": "checking"
+          }
+        ]
+      }
+    },
+    {
+      "name": "run_subflow_bsv",
+      "type": "run-subflow",
+      "transitions": [
+        {
+          "event": "completed"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "flow_sid": "FWe1a915ef593c2017f687f5f8c4afa452",
+        "flow_revision": "LatestPublished",
+        "offset": {
+          "x": -710,
+          "y": 4400
+        },
+        "parameters": [
+          {
+            "type": "string",
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.num_tel_contacto}}",
+            "key": "num_tel_contacto"
+          },
+          {
+            "type": "string",
+            "value": "{{name}}",
+            "key": "name"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.Number}}",
+            "key": "Number"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.year}}",
+            "key": "year"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.month}}",
+            "key": "month"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.month_cero}}",
+            "key": "month_cero"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.num_tel_contacto}}",
+            "key": "num_tel_contacto"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.arm}}",
+            "key": "arm"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.sexo_persona}}",
+            "key": "sexo_persona"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.age}}",
+            "key": "age"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.niv_educativo}}",
+            "key": "niv_educativo"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.cod_mpio}}",
+            "key": "cod_mpio"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.ntest}}",
+            "key": "ntest"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.wave}}",
+            "key": "wave"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.day}}",
+            "key": "day"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.console}}",
+            "key": "console"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.persug}}",
+            "key": "persug"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.grupo}}",
+            "key": "grupo"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.tip_actividad_mes}}",
+            "key": "tip_actividad_mes"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_1.inbound.Body}}",
+            "key": "verif_1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_1_reminder.inbound.Body}}",
+            "key": "verif_1_reminder"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_1_rem1.inbound.Body}}",
+            "key": "verif_1_rem1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_1.inbound.Body}}",
+            "key": "verif_dob_1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_1_err1.inbound.Body}}",
+            "key": "verif_dob_1_err1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_1_err2.inbound.Body}}",
+            "key": "verif_dob_1_err2"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_2.inbound.Body}}",
+            "key": "verif_dob_2"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+            "key": "verif_dob_2_err1"
+          },
+          {
+            "type": "string",
+            "value": "{{widgets.verif_dob_2_err2.inbound.Body}}",
+            "key": "verif_dob_2_err2"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_intro_multierror}}",
+            "key": "set_intro_multierror"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_intro_fail}}",
+            "key": "set_intro_fail"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_intro_no_reply}}",
+            "key": "set_intro_no_reply"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_verif_complete}}",
+            "key": "set_verif_complete"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_verif_wrong_dob}}",
+            "key": "set_verif_wrong_dob"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_time_ini}}",
+            "key": "set_time_ini"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_initial_multierror}}",
+            "key": "set_initial_multierror"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_initial_fail}}",
+            "key": "set_initial_fail"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.variables.set_initial_no_reply}}",
+            "key": "set_initial_no_reply"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.caseid}}",
+            "key": "caseid"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.age_cat}}",
+            "key": "age_cat"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.savings}}",
+            "key": "savings"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.credit}}",
+            "key": "credit"
+          },
+          {
+            "type": "string",
+            "value": "{{flow.data.checking}}",
+            "key": "checking"
+          }
+        ]
+      }
+    },
+    {
+      "name": "welcome",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_1_a",
+          "event": "sent"
+        },
+        {
+          "next": "espera_1_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -320,
+          "y": -590
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Hola! 👋 Somos IPA Colombia, una organización que investiga temas sociales. \n\nNos han compartido su número de celular desde el _Sisbén_ para invitarle a responder una encuesta sobre inclusión financiera en Colombia. Le tomará aprox. de 12 a 15 minutos.\n\n¡Aún puede terminarla!"
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
