@@ -1,0 +1,3327 @@
+{
+  "description": "A New Flow",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "next": "incoming",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "next": "welcome_message_03",
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1280,
+          "y": -1010
+        }
+      }
+    },
+    {
+      "name": "watch",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_1",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_watched_reminder",
+          "event": "timeout"
+        },
+        {
+          "next": "set_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1480,
+          "y": 390
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Pudiste ver el video con {{flow.data.name_child}}?\n\nPor favor responde *SI*, si ya pudiste verlo.\n\nResponde *NO*, si no has podido verlo.",
+        "timeout": "64800"
+      }
+    },
+    {
+      "name": "split_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_watch_error",
+          "event": "noMatch"
+        },
+        {
+          "next": "wait_6",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Si",
+              "arguments": [
+                "{{widgets.watch.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "Si,Sí,si.,sí.,si"
+            }
+          ]
+        },
+        {
+          "next": "wait_5",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "No",
+              "arguments": [
+                "{{widgets.watch.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "No,no.,NO,no"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.watch.inbound.Body}}",
+        "offset": {
+          "x": 1020,
+          "y": 610
+        }
+      }
+    },
+    {
+      "name": "reason_not_watch",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_not_watch",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1430,
+          "y": 1280
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Por qué no pudiste ver el video?\n\nEscribe:\n\n*2* si no tienes internet\n\n*3* si no se te abre el link pero sí tienes internet\n \n*4* si se dañó tu celular y no puedes ver videos\n\n*5* si el enlace del video no te sale en azul para hacerle click\n\n*6* si no sabes por qué estás recibiendo este mensaje\n\n*7* si aún no han tenido el tiempo para ver el video\n\n*8* si no quieres ver este video",
+        "timeout": "7200"
+      }
+    },
+    {
+      "name": "watched",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1230,
+          "y": -2260
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Nos alegra que hayas visto el video con {{flow.data.first_name_child}}\n\nQue tengas un buen resto de día."
+      }
+    },
+    {
+      "name": "ans_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -920,
+          "y": 2640
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Aquí está tu contraseña de acceso a los videos. \n\nContraseña: {{flow.data.code}}\n\n*Recuerda que esta contraseña te servirá para acceder a los videos y es única e intransferible. Sólo te servirá a tí y se volverá inválida si la compartes con otra persona. Por favor, GUÁRDALA y no la compartas con nadie*"
+      }
+    },
+    {
+      "name": "ans_2b",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -470,
+          "y": 3520
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "{{flow.data.mensaje}}"
+      }
+    },
+    {
+      "name": "ans_3c",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 700,
+          "y": 3740
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Vamos a ver qué pasó para poder ayudarte. \n\nNos estaremos comunicando contigo."
+      }
+    },
+    {
+      "name": "ans_4",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1680,
+          "y": 2630
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Te escribiremos al número alternativo que nos diste durante tu registro."
+      }
+    },
+    {
+      "name": "split_not_watch",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_reason_error",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reason_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.reason_not_watch.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "2.,2 ,2, DOS.,DOS,dos,dos.,segundo.,SEGUNDO,SEGUNDO."
+            }
+          ]
+        },
+        {
+          "next": "set_reason_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "3",
+              "arguments": [
+                "{{widgets.reason_not_watch.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "3,3.,3 ,tres.,tres,TRES,TRES.,Tres.,tercera.,tercera"
+            }
+          ]
+        },
+        {
+          "next": "set_reason_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "4",
+              "arguments": [
+                "{{widgets.reason_not_watch.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "4,4.,4 ,CUEATRO,CUATRO.,cuatro.,cuatro, cuarta.,cuarta"
+            }
+          ]
+        },
+        {
+          "next": "set_reason_5",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "5",
+              "arguments": [
+                "{{widgets.reason_not_watch.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "5,5.,5 ,cinco.,cinco,CINCO,CINCO.,quinta,quinta."
+            }
+          ]
+        },
+        {
+          "next": "set_reason_6",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "6",
+              "arguments": [
+                "{{widgets.reason_not_watch.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "6,6.,6 ,seis,seis.,SEIS,SEIS.,sexta,sexta.,sexto,sexto."
+            }
+          ]
+        },
+        {
+          "next": "set_reason_7",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "7",
+              "arguments": [
+                "{{widgets.reason_not_watch.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "7,7.,7 ,siete,siete.,SIETE,SIETE.,septimo,septimo.,septima,septima."
+            }
+          ]
+        },
+        {
+          "next": "set_reason_8",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "8",
+              "arguments": [
+                "{{widgets.reason_not_watch.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "8,8.,8 ,ocho,ocho.,OCHO,OCHO.,octavo,octavo.,octava,octava."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.reason_not_watch.inbound.Body}}",
+        "offset": {
+          "x": 1180,
+          "y": 1500
+        }
+      }
+    },
+    {
+      "name": "ans_5",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2100,
+          "y": 2630
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor intenta de nuevo con este enlace. \n\n{{flow.data.url_login}}"
+      }
+    },
+    {
+      "name": "error_num",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "wait_5",
+          "event": "sent"
+        },
+        {
+          "next": "wait_5",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1430,
+          "y": 2630
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribiste. \n\nPor favor *digita el número correspondiente* a la opción que quieras elegir. \n\nPor ejemplo, si no has podido ver el video porque _el enlace del video no te sale en azul para hacerle click_, escribe *5*.\n\nRecuerda que soy un robot 🤖 y no entiendo todo lo que me escribes."
+      }
+    },
+    {
+      "name": "error",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "wait_1",
+          "event": "sent"
+        },
+        {
+          "next": "wait_1",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 410,
+          "y": 1490
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribiste. \n\nPor favor *escribe SI o NO* según corresponda.\n\nPor ejemplo, _si no has visto el video porque no recuerdas la contraseña_ escribe *NO*. \n\nRecuerda que soy un robot 🤖 y no entiendo todo lo que me escribes."
+      }
+    },
+    {
+      "name": "incoming",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 620,
+          "y": -730
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Muchas gracias por escribirnos!\n\nJusto ahora no estamos recibiendo mensajes, pero no te preocupes, nos estaremos comunicando contigo de ser necesario."
+      }
+    },
+    {
+      "name": "post_gsheets",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "wait_14",
+          "event": "success"
+        },
+        {
+          "next": "wait_14",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd9abf1b7703330e5ba5fb48eec3548a0",
+        "environment_sid": "ZE484c1a57f31c800e3d8eeb2088d9602b",
+        "offset": {
+          "x": 1240,
+          "y": 4190
+        },
+        "function_sid": "ZH8b846ad7a7804aac66b33c481e237978",
+        "parameters": [
+          {
+            "value": "{{flow.data.id}}",
+            "key": "id"
+          },
+          {
+            "value": "{{widgets.reason_not_watch.inbound.Body}}",
+            "key": "reason_not_watch"
+          },
+          {
+            "value": "{{flow.variables.set_fail}}",
+            "key": "set_fail"
+          },
+          {
+            "value": "{{flow.variables.set_watch_error}}",
+            "key": "set_watch_error"
+          },
+          {
+            "value": "{{flow.variables.set_reason_error}}",
+            "key": "set_reason_error"
+          },
+          {
+            "value": "{{flow.variables.set_multierror}}",
+            "key": "set_multierror"
+          },
+          {
+            "value": "{{flow.data.num_video}}",
+            "key": "num_video"
+          },
+          {
+            "value": "{{flow.data.grupo}}",
+            "key": "grupo"
+          },
+          {
+            "value": "{{flow.data.barrio}}",
+            "key": "barrio"
+          },
+          {
+            "value": "{{flow.data.token}}",
+            "key": "token"
+          },
+          {
+            "value": "{{flow.variables.set_no_reply}}",
+            "key": "set_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_watched}}",
+            "key": "set_watched"
+          },
+          {
+            "value": "{{flow.variables.set_not_watched}}",
+            "key": "set_not_watched"
+          },
+          {
+            "value": "{{flow.variables.set_reason_1}}",
+            "key": "set_reason_1"
+          },
+          {
+            "value": "{{flow.variables.set_reason_2}}",
+            "key": "set_reason_2"
+          },
+          {
+            "value": "{{flow.variables.set_reason_3}}",
+            "key": "set_reason_3"
+          },
+          {
+            "value": "{{flow.variables.set_reason_4}}",
+            "key": "set_reason_4"
+          },
+          {
+            "value": "{{flow.variables.set_reason_5}}",
+            "key": "set_reason_5"
+          },
+          {
+            "value": "{{flow.variables.set_reason_6}}",
+            "key": "set_reason_6"
+          },
+          {
+            "value": "{{flow.variables.set_sent}}",
+            "key": "set_sent"
+          },
+          {
+            "value": "{{flow.variables.set_watched_reminder}}",
+            "key": "watch_reminder"
+          },
+          {
+            "value": "{{flow.variables.set_reason_7}}",
+            "key": "set_reason_7"
+          },
+          {
+            "value": "{{flow.variables.set_reason_8}}",
+            "key": "set_reason_8"
+          },
+          {
+            "value": "{{widgets.why_8.inbound.Body}}",
+            "key": "why_8"
+          },
+          {
+            "value": "{{flow.variables.set_flow_fail}}",
+            "key": "set_flow_fail"
+          },
+          {
+            "value": "{{flow.variables.set_reason_2a_1}}",
+            "key": "set_reason_2a_1"
+          },
+          {
+            "value": "{{flow.variables.set_reason_2a_2}}",
+            "key": "set_reason_2a_2"
+          },
+          {
+            "value": "{{flow.data.childgender}}",
+            "key": "childgender"
+          },
+          {
+            "value": "{{flow.data.recargas}}",
+            "key": "recargas"
+          },
+          {
+            "value": "{{widgets.ans_2a.inbound.Body}}",
+            "key": "ans_2a"
+          },
+          {
+            "value": "{{widgets.ans_3b.inbound.Body}}",
+            "key": "ans_3b"
+          },
+          {
+            "value": "{{flow.variables.set_reason_3b_si}}",
+            "key": "set_reason_3b_si"
+          },
+          {
+            "value": "{{flow.variables.set_reason_3b_no}}",
+            "key": "set_reason_3b_no"
+          }
+        ],
+        "url": "https://publish-2037.twil.io/postresponses"
+      }
+    },
+    {
+      "name": "set_watch_error",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_watch_error",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_watch_error -%} {{flow.variables.set_watch_error | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_watch_error"
+          }
+        ],
+        "offset": {
+          "x": 590,
+          "y": 830
+        }
+      }
+    },
+    {
+      "name": "split_watch_error",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "wait_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "wait_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">2",
+              "arguments": [
+                "{{flow.variables.set_watch_error}}"
+              ],
+              "type": "greater_than",
+              "value": "2"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_watch_error}}",
+        "offset": {
+          "x": 590,
+          "y": 1050
+        }
+      }
+    },
+    {
+      "name": "multierror",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "set_multierror",
+          "event": "sent"
+        },
+        {
+          "next": "set_multierror",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 770,
+          "y": 1490
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Parece que no has respondido de una forma en el que el sistema te entienda. \n\nPero no te preocupes, nos estaremos *comunicando contigo próximamente*."
+      }
+    },
+    {
+      "name": "set_multierror",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_multierror -%} {{flow.variables.set_multierror| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_multierror"
+          }
+        ],
+        "offset": {
+          "x": 770,
+          "y": 1730
+        }
+      }
+    },
+    {
+      "name": "split_reason_error",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "error_num",
+          "event": "noMatch"
+        },
+        {
+          "next": "wait_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">2",
+              "arguments": [
+                "{{flow.variables.set_reason_error}}"
+              ],
+              "type": "greater_than",
+              "value": "2"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_reason_error}}",
+        "offset": {
+          "x": -1430,
+          "y": 2410
+        }
+      }
+    },
+    {
+      "name": "set_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_fail-%} {{flow.variables.set_fail| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_fail"
+          }
+        ],
+        "offset": {
+          "x": 2000,
+          "y": -710
+        }
+      }
+    },
+    {
+      "name": "wait_1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "watch",
+          "event": "success"
+        },
+        {
+          "next": "watch",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1480,
+          "y": 170
+        },
+        "function_sid": "ZH1e0b499bac68d6ea87cd9cfbef5b9545",
+        "url": "https://aleatorio-1037.twil.io/super_wait"
+      }
+    },
+    {
+      "name": "wait_3",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "error",
+          "event": "success"
+        },
+        {
+          "next": "error",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 410,
+          "y": 1270
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "wait_4",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "multierror",
+          "event": "success"
+        },
+        {
+          "next": "multierror",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 760,
+          "y": 1270
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "wait_5",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_not_watched",
+          "event": "success"
+        },
+        {
+          "next": "set_not_watched",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1430,
+          "y": 830
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "wait_6",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_watched",
+          "event": "success"
+        },
+        {
+          "next": "set_watched",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1040,
+          "y": 830
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "ans_6",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2500,
+          "y": 2630
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Hola {{flow.data.name_careg}}😊, somos IPA y Plaza Sésamo!\n\nTe estamos escribiendo porque este número está registrado en el proyecto *Jugar para Aprender*.\n\nDurante 19 semanas, entre septiembre 2022 y febrero 2023, te compartiremos a través de WhatsApp 38 videos, 2 videos por semana, para que *{{flow.data.name_child}}* los mire.\n\nPara ingresar al video debes tocar el link e ingresar una clave. \n\nPor favor ten en cuenta que los videos solamente pueden ser vistos por *{{flow.data.first_name_child}}* y en el celular que nos ha dado como contacto. Estos videos los podrán ver cuantas veces quieran para aprender y distraerse. Por favor te pedimos no compartirlos con personas fuera de tu hogar. \n\nAl finalizar las 19 semanas, te pediremos que vuelvas al punto de registro para poder realizar nuestra encuesta nuevamente y recibir su incentivo.\n\nHaz click en este link para ver el video y aprender sobre _{{flow.data.video_topic}}_:\n\n*{{flow.data.url}}*"
+      }
+    },
+    {
+      "name": "wait_7",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_1",
+          "event": "success"
+        },
+        {
+          "next": "ans_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -920,
+          "y": 2420
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "wait_8",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_2a",
+          "event": "success"
+        },
+        {
+          "next": "ans_2a",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -470,
+          "y": 2420
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "wait_9",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_3a",
+          "event": "success"
+        },
+        {
+          "next": "ans_3a",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 700,
+          "y": 2410
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "wait_10",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_4",
+          "event": "success"
+        },
+        {
+          "next": "ans_4",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1680,
+          "y": 2410
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "wait_11",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_5",
+          "event": "success"
+        },
+        {
+          "next": "ans_5",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 2100,
+          "y": 2410
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "wait_13",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_6",
+          "event": "success"
+        },
+        {
+          "next": "ans_6",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 2500,
+          "y": 2410
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "wait_14",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ptl_intro3b_att2",
+          "event": "success"
+        },
+        {
+          "next": "ptl_intro3b_att2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1240,
+          "y": 4410
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "end_7",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1250,
+          "y": 5090
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Muchas gracias por participar.\n\nSi tienes alguna duda o necesitas cambio de teléfono *escríbenos o llámanos* al número *3187704635*, o al correo mtvilanova@poverty-action.org.\n\nTe invitamos a seguir viendo los vídeos. *Este es el video {{flow.data.num_video}} de 38*\n\n_Equipo IPA y Plaza Sésamo_"
+      }
+    },
+    {
+      "name": "reminder_2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_2",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1900,
+          "y": 830
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Ha pasado un rato, queríamos confirmar si pudiste ver el video de Plaza Sésamo con {{flow.data.name_child}}\n\n¿Pudiste ver el video?\nPor favor responde *SI*, si ya pudiste verlo. \nResponde *NO*, si no has podido verlo.",
+        "timeout": "14400"
+      }
+    },
+    {
+      "name": "split_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_watch_error",
+          "event": "noMatch"
+        },
+        {
+          "next": "wait_6",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Si",
+              "arguments": [
+                "{{widgets.reminder_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "Si,Sí,si.,sí.,si"
+            }
+          ]
+        },
+        {
+          "next": "wait_5",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "No",
+              "arguments": [
+                "{{widgets.reminder_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "No,no.,NO,no"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.reminder_2.inbound.Body}}",
+        "offset": {
+          "x": 1900,
+          "y": 1050
+        }
+      }
+    },
+    {
+      "name": "set_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_no_reply -%} {{flow.variables.set_no_reply | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 1650,
+          "y": 1500
+        }
+      }
+    },
+    {
+      "name": "set_reason_error",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_reason_error",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_error -%} {{flow.variables.set_reason_error | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_error"
+          }
+        ],
+        "offset": {
+          "x": -1430,
+          "y": 2190
+        }
+      }
+    },
+    {
+      "name": "set_watched",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_watched-%} {{flow.variables.set_watched| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_watched"
+          }
+        ],
+        "offset": {
+          "x": 1040,
+          "y": 1050
+        }
+      }
+    },
+    {
+      "name": "set_not_watched",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "reason_not_watch",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_not_watched-%} {{flow.variables.set_not_watched| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_not_watched"
+          }
+        ],
+        "offset": {
+          "x": 1430,
+          "y": 1060
+        }
+      }
+    },
+    {
+      "name": "set_reason_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_7",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_1-%} {{flow.variables.set_reason_1| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_1"
+          }
+        ],
+        "offset": {
+          "x": -920,
+          "y": 2190
+        }
+      }
+    },
+    {
+      "name": "set_reason_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_8",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_2-%} {{flow.variables.set_reason_2| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_2"
+          }
+        ],
+        "offset": {
+          "x": -470,
+          "y": 2190
+        }
+      }
+    },
+    {
+      "name": "set_reason_3",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_9",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_3-%} {{flow.variables.set_reason_3| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_3"
+          }
+        ],
+        "offset": {
+          "x": 700,
+          "y": 2190
+        }
+      }
+    },
+    {
+      "name": "set_reason_4",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_10",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_4-%} {{flow.variables.set_reason_4| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_4"
+          }
+        ],
+        "offset": {
+          "x": 1680,
+          "y": 2190
+        }
+      }
+    },
+    {
+      "name": "set_reason_5",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_11",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_5-%} {{flow.variables.set_reason_5| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_5"
+          }
+        ],
+        "offset": {
+          "x": 2100,
+          "y": 2190
+        }
+      }
+    },
+    {
+      "name": "set_reason_6",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_13",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_6-%} {{flow.variables.set_reason_6| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_6"
+          }
+        ],
+        "offset": {
+          "x": 2500,
+          "y": 2190
+        }
+      }
+    },
+    {
+      "name": "set_sent",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_sent -%} {{flow.variables.set_sent| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_sent"
+          }
+        ],
+        "offset": {
+          "x": 1480,
+          "y": -50
+        }
+      }
+    },
+    {
+      "name": "set_watched_reminder",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "reminder_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_watched_reminder-%} {{flow.variables.set_watched_reminder| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_watched_reminder"
+          }
+        ],
+        "offset": {
+          "x": 1900,
+          "y": 610
+        }
+      }
+    },
+    {
+      "name": "set_reason_7",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_12",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_7-%} {{flow.variables.set_reason_7| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_7"
+          }
+        ],
+        "offset": {
+          "x": 2890,
+          "y": 2190
+        }
+      }
+    },
+    {
+      "name": "wait_12",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_7",
+          "event": "success"
+        },
+        {
+          "next": "ans_7",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 2890,
+          "y": 2410
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "ans_7",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2890,
+          "y": 2630
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Este video dura solo _10 minutos_, te invitamos a que lo veas con *{{flow.data.name_child}}* para que disfruten con Elmo y sus amigos 🐻🍪."
+      }
+    },
+    {
+      "name": "set_reason_8",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_15",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_8-%} {{flow.variables.set_reason_8| plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_8"
+          }
+        ],
+        "offset": {
+          "x": 3290,
+          "y": 2190
+        }
+      }
+    },
+    {
+      "name": "wait_15",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "why_8",
+          "event": "success"
+        },
+        {
+          "next": "why_8",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 3290,
+          "y": 2420
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "ans_8",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3170,
+          "y": 3080
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Este video dura solo _10 minutos_ y pensamos que *{{flow.data.name_child}}* lo disfrutará mucho y podrá aprender con Elmo!🐻🍪."
+      }
+    },
+    {
+      "name": "why_8",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "wait_16",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "wait_16",
+          "event": "timeout"
+        },
+        {
+          "next": "set_flow_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3290,
+          "y": 2640
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Lamentamos esto. Por favor, nos podrías contar por qué no quieres ver este video con *{{flow.data.name_child}}*. \n\nPor favor escribe la razón principal *en un sólo mensaje*.",
+        "timeout": "7200"
+      }
+    },
+    {
+      "name": "wait_16",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_8",
+          "event": "success"
+        },
+        {
+          "next": "ans_8",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 3170,
+          "y": 2860
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "ans_2a",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_2a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_no_reply_2a",
+          "event": "timeout"
+        },
+        {
+          "next": "set_flow_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -460,
+          "y": 2640
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Por qué no tienes internet?\n\nEscribe:\n*1* si no tienes señal\n\n*2* si no tienes recarga de internet ahora",
+        "timeout": "7200"
+      }
+    },
+    {
+      "name": "split_2a",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_watch_error_2a",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reason_2a_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.ans_2a.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1., 1 , 1, UNO, uno, Uno.,UNO., uno., Uno.., PRIMERO, primero,No tengo señal"
+            }
+          ]
+        },
+        {
+          "next": "set_reason_2a_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.ans_2a.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "2.,2 ,2, DOS.,DOS,dos,dos.,segundo.,SEGUNDO,SEGUNDO.,No tengo dinero para una recarga"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.ans_2a.inbound.Body}}",
+        "offset": {
+          "x": -630,
+          "y": 2860
+        }
+      }
+    },
+    {
+      "name": "set_watch_error_2a",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_watch_error_2a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_watch_error_2a -%} {{flow.variables.set_watch_error_2a | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_watch_error_2a"
+          }
+        ],
+        "offset": {
+          "x": -980,
+          "y": 3080
+        }
+      }
+    },
+    {
+      "name": "split_watch_error_2a",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "wait_18",
+          "event": "noMatch"
+        },
+        {
+          "next": "wait_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">3",
+              "arguments": [
+                "{{flow.variables.set_watch_error_2a}}"
+              ],
+              "type": "greater_than",
+              "value": "3"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_watch_error_2a}}",
+        "offset": {
+          "x": -980,
+          "y": 3310
+        }
+      }
+    },
+    {
+      "name": "wait_18",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "error_2a",
+          "event": "success"
+        },
+        {
+          "next": "error_2a",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -980,
+          "y": 3530
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "error_2a",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "ans_2a",
+          "event": "sent"
+        },
+        {
+          "next": "ans_2a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -980,
+          "y": 3750
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribiste. \n\nPor favor *escribe SI o NO* según corresponda.\n\nPor ejemplo, _si no has visto el video porque no tienes señal escribe *1*. \n\nRecuerda que soy un robot 🤖 y no entiendo todo lo que me escribes."
+      }
+    },
+    {
+      "name": "set_reason_2a_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_17",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_2a_1 -%} {{flow.variables.set_reason_2a_1 | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_2a_1"
+          }
+        ],
+        "offset": {
+          "x": -640,
+          "y": 3080
+        }
+      }
+    },
+    {
+      "name": "wait_17",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_2b",
+          "event": "success"
+        },
+        {
+          "next": "ans_2b",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -470,
+          "y": 3300
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "set_reason_2a_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_17",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_2a_2 -%} {{flow.variables.set_reason_2a_2 | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_2a_2"
+          }
+        ],
+        "offset": {
+          "x": -310,
+          "y": 3080
+        }
+      }
+    },
+    {
+      "name": "set_no_reply_2a",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "wait_17",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_no_reply_2a -%} {{flow.variables.set_no_reply_2a | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_no_reply_2a"
+          }
+        ],
+        "offset": {
+          "x": -290,
+          "y": 2860
+        }
+      }
+    },
+    {
+      "name": "set_flow_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "flow_fail_message",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_flow_fail -%} {{flow.variables.set_flow_fail | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_flow_fail"
+          }
+        ],
+        "offset": {
+          "x": 3950,
+          "y": 1950
+        }
+      }
+    },
+    {
+      "name": "flow_fail_message",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "sent"
+        },
+        {
+          "next": "post_gsheets",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3950,
+          "y": 2170
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Parece que hemos tenido un error inesperado.\n\nPero no te preocupes, *te enviaremos estas preguntas nuevamente en los próximos días*."
+      }
+    },
+    {
+      "name": "welcome2_010120",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "set_sent",
+          "event": "sent"
+        },
+        {
+          "next": "set_sent",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1480,
+          "y": -270
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Ingresa al siguiente enlace {{flow.data.url_login}} para tener el *NUEVO* video y tener ese tiempo de calidad🧸⏰. *¡Ingresa ya!*"
+      }
+    },
+    {
+      "name": "ans_3a",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "function_3a",
+          "event": "sent"
+        },
+        {
+          "next": "function_3a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 700,
+          "y": 2630
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor intenta de nuevo con este enlace. \n\n{{flow.data.url_login}}"
+      }
+    },
+    {
+      "name": "function_3a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ans_3b",
+          "event": "success"
+        },
+        {
+          "next": "ans_3b",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 700,
+          "y": 2850
+        },
+        "function_sid": "ZHc73d3822590fe2173f734e80777ea377",
+        "url": "https://aleatorio-1037.twil.io/wait"
+      }
+    },
+    {
+      "name": "ans_3b",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_3b",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_no_reply_3b",
+          "event": "timeout"
+        },
+        {
+          "next": "set_flow_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 700,
+          "y": 3070
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Ya te funciona el link para ingresar al video?\n\nEscribe:\n*1* si tu respuestas es: *Sí*\n*2* si tu respuestas es: *No*",
+        "timeout": "7200"
+      }
+    },
+    {
+      "name": "set_reason_3b_si",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_3b_si -%} {{flow.variables.set_reason_3b_si | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_3b_si"
+          }
+        ],
+        "offset": {
+          "x": 350,
+          "y": 3520
+        }
+      }
+    },
+    {
+      "name": "set_reason_3b_no",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "ans_3c",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reason_3b_no -%} {{flow.variables.set_reason_3b_no | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reason_3b_no"
+          }
+        ],
+        "offset": {
+          "x": 700,
+          "y": 3520
+        }
+      }
+    },
+    {
+      "name": "set_no_reply_3b",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "post_gsheets",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_no_reply_3b -%} {{flow.variables.set_no_reply_3b | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_no_reply_3b"
+          }
+        ],
+        "offset": {
+          "x": 1130,
+          "y": 3290
+        }
+      }
+    },
+    {
+      "name": "set_watch_error_3b",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_watch_error_3b",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_watch_error_3b -%} {{flow.variables.set_watch_error_3b | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_watch_error_3b"
+          }
+        ],
+        "offset": {
+          "x": 20,
+          "y": 3520
+        }
+      }
+    },
+    {
+      "name": "split_watch_error_3b",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "wait_19",
+          "event": "noMatch"
+        },
+        {
+          "next": "multierror",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": ">3",
+              "arguments": [
+                "{{flow.variables.set_watch_error_3b}}"
+              ],
+              "type": "greater_than",
+              "value": "3"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.set_watch_error_3b}}",
+        "offset": {
+          "x": 20,
+          "y": 3740
+        }
+      }
+    },
+    {
+      "name": "wait_19",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "error_3b",
+          "event": "success"
+        },
+        {
+          "next": "error_3b",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 20,
+          "y": 3960
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "error_3b",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "ans_3b",
+          "event": "sent"
+        },
+        {
+          "next": "ans_3b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 20,
+          "y": 4190
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribiste. \n\nPor favor *escribe SI o NO* según corresponda.\n\nPor ejemplo, _si no has visto el video porque no tienes señal escribe *1*. \n\nRecuerda que soy un robot 🤖 y no entiendo todo lo que me escribes."
+      }
+    },
+    {
+      "name": "split_3b",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_watch_error_3b",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reason_3b_si",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.ans_3b.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1., 1 , 1,Sí,Si,SI,si,*Si*,*Sí*,*SI*,*si*"
+            }
+          ]
+        },
+        {
+          "next": "set_reason_3b_no",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.ans_3b.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "2.,2 ,2,NO,No,no,*NO*,*No*,*no*"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.ans_3b.inbound.Body}}",
+        "offset": {
+          "x": 270,
+          "y": 3290
+        }
+      }
+    },
+    {
+      "name": "Copy_of_ptl_intro1_vf_parte1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": -2070
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Hola {{flow.data.name_careg}}😊, somos IPA y Plaza Sésamo!  \n\nTe escribimos porque te inscribiste al proyecto *Jugar para Aprender*. Hasta febrero, recibirás 2 videos semanales con contenido educativo a través de WhatsApp, para que los veas con {{flow.data.name_child}}. Estos videos los podrán ver cuantas veces quieran para aprender y distraerse. Por favor te pedimos no compartirlos con personas fuera de tu hogar.\n\nEn febrero, te contactaremos para realizar nuestra encuesta nuevamente y recibir un *obsequio*."
+      }
+    },
+    {
+      "name": "Copy_of_ptl_intro1_vf_parte2f",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1230,
+          "y": -2070
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "En el siguiente vídeo aprenderás sobre {{flow.data.video_topic}}. Para verlo, entra al siguiente enlace *{{flow.data.url}}* e introduce la siguiente contraseña *{{flow.data.code}}* 📺"
+      }
+    },
+    {
+      "name": "Copy_of_link_intro_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1230,
+          "y": -1820
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Hola {{flow.data.name_careg}}😊, somos IPA y Plaza Sésamo!  \n\nGracias por seguir con nosotros. Estamos muy emocionados de compartirte el video {{flow.data.num_video}} para que lo puedas ver con {{flow.data.name_child}} 🧸. \n\n Haz click en este link para ver nuestro video y aprender sobre *{{flow.data.video_topic}}*: \n\n{{flow.data.url}}"
+      }
+    },
+    {
+      "name": "Copy_of_ptl_intro_2_contra_att_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": -1820
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Para ver este NUEVO vídeo de Plaza Sésamo, no olvides introducir la siguiente contraseña {{flow.data.code}} 📺."
+      }
+    },
+    {
+      "name": "split_treated",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "event": "noMatch"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to 1",
+              "arguments": [
+                "{{flow.data.dummytreatment}}"
+              ],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to 0",
+              "arguments": [
+                "{{flow.data.dummytreatment}}"
+              ],
+              "type": "equal_to",
+              "value": "0"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.data.dummytreatment}}",
+        "offset": {
+          "x": 3290,
+          "y": -3070
+        }
+      }
+    },
+    {
+      "name": "goal_setting_1_att2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_002",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "wait_intro_treatment_2",
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3080,
+          "y": -2650
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¡Es hora de planear *el momento Sésamo* 🧸⏰, {{flow.data.name_careg}}! El momento en el que tú y {{flow.data.name_child}} comparten un tiempo chévere viendo el *NUEVO* video de Elmo y sus amigos. ¿Cuándo lo tendrás?\n\nPor favor *escribe el número que corresponda* según el momento en el que lo tendrás:\n\n*1* Ahora mismo\n\n*2* Más tarde\n\n*3* Mañana\n\n*4* Después de mañana",
+        "timeout": "600"
+      }
+    },
+    {
+      "name": "goal_setting_2_att1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3060,
+          "y": -1600
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Bacano! Ingresa al siguiente enlace {{flow.data.url_login}} para tener *tiempo Sésamo* ⏰🧸."
+      }
+    },
+    {
+      "name": "goal_setting3_att1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3570,
+          "y": -2150
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No hemos recibido ninguna respuesta coherente. Esperamos que no olvides tener *tiempo Sésamo* ⏰🧸. ¡Ingresa YA al siguiente enlace {{flow.data.url_login}} para ver este *NUEVO* video, está bien bacano!"
+      }
+    },
+    {
+      "name": "wait_intro_treatment_1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_reply_treatment",
+          "event": "success"
+        },
+        {
+          "next": "set_reply_treatment",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 3090,
+          "y": -2100
+        },
+        "function_sid": "ZHc73d3822590fe2173f734e80777ea377",
+        "url": "https://aleatorio-1037.twil.io/wait"
+      }
+    },
+    {
+      "name": "wait_intro_treatment_2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_no_reply_treatment",
+          "event": "success"
+        },
+        {
+          "next": "set_no_reply_treatment",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 3550,
+          "y": -2610
+        },
+        "function_sid": "ZHc73d3822590fe2173f734e80777ea377",
+        "url": "https://aleatorio-1037.twil.io/wait"
+      }
+    },
+    {
+      "name": "set_no_reply_treatment",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "goal_setting3_att1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_no_reply_treatment -%} {{flow.variables.set_no_reply_treatment | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_no_reply_treatment"
+          }
+        ],
+        "offset": {
+          "x": 3560,
+          "y": -2380
+        }
+      }
+    },
+    {
+      "name": "set_reply_treatment",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "goal_setting_2_att1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reply_treatment -%} {{flow.variables.set_reply_treatment | plus: 1}} {%- else -%} 1 {%- endif -%}",
+            "key": "set_reply_treatment"
+          }
+        ],
+        "offset": {
+          "x": 3090,
+          "y": -1850
+        }
+      }
+    },
+    {
+      "name": "ptl_intro3b_att2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "split_badges",
+          "event": "sent"
+        },
+        {
+          "next": "wait_20",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1250,
+          "y": 4640
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¿Sabes si {{flow.data.skill_last_video}}? Si no sabes qué es eso, ¡mira el video pasado con él/ella!",
+        "media_url": ""
+      }
+    },
+    {
+      "name": "wait_20",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "end_7",
+          "event": "success"
+        },
+        {
+          "next": "end_7",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1250,
+          "y": 4870
+        },
+        "function_sid": "ZHc73d3822590fe2173f734e80777ea377",
+        "url": "https://aleatorio-1037.twil.io/wait"
+      }
+    },
+    {
+      "name": "split_002",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "wait_intro_treatment_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "wait_intro_treatment_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.goal_setting_1_att2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,uno,UNO,1 ,1.,Uno, 1"
+            }
+          ]
+        },
+        {
+          "next": "wait_intro_treatment_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.goal_setting_1_att2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "2,dos,DOS,2 ,2.,Dos, 2"
+            }
+          ]
+        },
+        {
+          "next": "wait_intro_treatment_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "3",
+              "arguments": [
+                "{{widgets.goal_setting_1_att2.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "3,tres,TRES,3 ,3.,Tres, 3"
+            }
+          ]
+        },
+        {
+          "next": "wait_intro_treatment_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "4",
+              "arguments": [
+                "{{widgets.goal_setting_1_att2.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "4,cuatro,CUATRO,4 ,4.,Cuatro, 4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.goal_setting_1_att2.inbound.Body}}",
+        "offset": {
+          "x": 3070,
+          "y": -2390
+        }
+      }
+    },
+    {
+      "name": "Copy_of_ptl_intro_9_att1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": -2280
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hola {{flow.data.name_careg}}, ¡es hora de planear *el momento Sésamo* 🕰️🧸 del día! El momento en el que tú y {{flow.data.name_child}} comparten tiempo de calidad viendo el *NUEVO* video de Elmo y sus amigos. ¿Cuándo lo tendrás?"
+      }
+    },
+    {
+      "name": "Copy_of_goal_setting7_att2_p",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1240,
+          "y": -2480
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¿Sabías que los videos Sésamo se han visto en todo el mundo? Sésamo ayuda a que los niños y niñas aprendan mientras se divierten. ¿Cuántos videos {{flow.data.name_child}} ya ha visto de Plaza Sésamo?"
+      }
+    },
+    {
+      "name": "end_67",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": -2690
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡No te vayas! Te contamos que *el domingo por la mañana* {{flow.data.name_child}} y tú recibirán de nuevo *los PRIMEROS SEIS vídeos SIN contraseña*. ¡Estén atentos! 🧸⏰."
+      }
+    },
+    {
+      "name": "Copy_of_wait_20",
+      "type": "run-function",
+      "transitions": [
+        {
+          "event": "success"
+        },
+        {
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1240,
+          "y": -2690
+        },
+        "function_sid": "ZH7fd70fac9b5fc79c4f221225b849e173",
+        "url": "https://aleatorio-1037.twil.io/longer_wait"
+      }
+    },
+    {
+      "name": "Copy_of_goal_setting_6att1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1620,
+          "y": -2480
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Ingresa al siguiente enlace {{flow.data.url_login}} para tener *tiempo Sésamo* 🧸⏰. *¡Ingresa ya!*"
+      }
+    },
+    {
+      "name": "past_videos_op_att1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 150,
+          "y": -2720
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hola, aquí estamos justo como te lo prometimos. Te compartimos a continuación *los PRIMEROS SEIS vídeos SIN contraseña* de Elmo y sus amigos. ¡Dale click a los enlaces para ir a cada vídeo! Esperamos que {{flow.data.name_child}} pueda repetirse sus videos favoritos cuantas veces quiera 🧸⏰."
+      }
+    },
+    {
+      "name": "wait_intro_aparte",
+      "type": "run-function",
+      "transitions": [
+        {
+          "event": "success"
+        },
+        {
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 150,
+          "y": -2510
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "goal_setting_5_att2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 160,
+          "y": -2290
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Para tenerlo ingresa al siguiente enlace {{flow.data.recap_1_6}} ⏰🧸."
+      }
+    },
+    {
+      "name": "welcome_17112022_att01",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1980,
+          "y": -2680
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Aquí tienes el *NUEVO* vídeo de Sésamo🧸. ¡Haz click en el link {{flow.data.url_login}} para verlo!"
+      }
+    },
+    {
+      "name": "split_badges",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "event": "noMatch"
+        },
+        {
+          "next": "imagen_0",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "if 0",
+              "arguments": [
+                "{{flow.data.badges_week17}}"
+              ],
+              "type": "equal_to",
+              "value": "0"
+            }
+          ]
+        },
+        {
+          "next": "imagen_podio_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If 2",
+              "arguments": [
+                "{{flow.data.badges_week17}}"
+              ],
+              "type": "equal_to",
+              "value": "2"
+            }
+          ]
+        },
+        {
+          "next": "imagen_podio_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If 3",
+              "arguments": [
+                "{{flow.data.badges_week17}}"
+              ],
+              "type": "equal_to",
+              "value": "3"
+            }
+          ]
+        },
+        {
+          "next": "imagen_podio_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If 1",
+              "arguments": [
+                "{{flow.data.badges_week17}}"
+              ],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.data.badges_week17}}",
+        "offset": {
+          "x": 190,
+          "y": 4890
+        }
+      }
+    },
+    {
+      "name": "imagen_podio_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "wait_20",
+          "event": "sent"
+        },
+        {
+          "next": "wait_20",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 320,
+          "y": 5130
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hoy obtienes una medalla de plata con Elmo sonriente 😄🥈. Es un reconocimiento por tener la iniciativa de ver algunos de los vídeos. Si ves más vídeos, puedes descubrir ¡nuevas medallas las próximas semana!",
+        "media_url": "https://i.ibb.co/Z8BL8jf/4badge2-20230119.png"
+      }
+    },
+    {
+      "name": "imagen_0",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "wait_20",
+          "event": "sent"
+        },
+        {
+          "next": "wait_20",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -280,
+          "y": 5130
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Si ves más videos podrás desbloquear la imagen y descubrir la medalla 🥇escondida! 🤓🧸.",
+        "media_url": "https://i.ibb.co/Gt9n1Fk/3badge4-20221215.png"
+      }
+    },
+    {
+      "name": "imagen_podio_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "wait_20",
+          "event": "sent"
+        },
+        {
+          "next": "wait_20",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 620,
+          "y": 5130
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Aquí está tu premio por ver la mayoría de los vídeos! Hoy obtienes una medalla de oro con Elmo y sus amigos🥇. Continúa así para seguir recibiendo imágenes Sésamo de Oro.",
+        "media_url": "https://i.ibb.co/9wX3n5Z/4badge1-20230119.png"
+      }
+    },
+    {
+      "name": "imagen_podio_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "wait_20",
+          "event": "sent"
+        },
+        {
+          "next": "wait_20",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 20,
+          "y": 5130
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hoy obtienes un Come Galletas de Bronce🥉. Si ves más vídeos con {{flow.data.name_child}}, puedes descubrir ¡nuevas medallas la próxima semana!",
+        "media_url": "https://i.ibb.co/RbFgyj4/4badge3-20230119.png"
+      }
+    },
+    {
+      "name": "Copy_of_welcome_17112022_att01",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": -2890
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Aquí tienes el *NUEVO* vídeo de Sésamo🧸. ¡Haz click en el link {{flow.data.url_login}} para verlo!"
+      }
+    },
+    {
+      "name": "Copy_of_welcome2_03012022",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1240,
+          "y": -3090
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Ingresa al siguiente enlace {{flow.data.url_login}} para ver el *NUEVO* video y compartir con Elmo y sus amigos🧸⏰"
+      }
+    },
+    {
+      "name": "welcome_message_03",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "wait_intro_1",
+          "event": "sent"
+        },
+        {
+          "next": "set_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1490,
+          "y": -710
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "El 2023 trae nuevas metas, busca el tiempo para ver los videos de Elmo con {{flow.data.name_child}}🧸⏰. Solo nos faltan *6 videos* para acabar el programa, ¡no te los pierdas!"
+      }
+    },
+    {
+      "name": "end_navidad",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1630,
+          "y": -3090
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Felices fiestas! Al igual que tú, nos tomaremos unas vacaciones de fin de año🎄 las siguientes dos semanas. \n\nA partir del 10 de enero del próximo año volverás a recibir los nuevos vídeos semanales de Elmo y sus amigos."
+      }
+    },
+    {
+      "name": "Copy_of_welcome_20230131",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1240,
+          "y": -3300
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Hola! Te contamos que en el mes de marzo volveremos a tu barrio a hacer las actividades que hicimos el año pasado contigo y {{flow.data.name_child}} 🧸⏰. Te pedimos que estés pendiente de este celular, porque pronto te estaremos llamando para confirmar sitio y fecha. Pero ahora, te enviamos un *NUEVO* vídeo para que {{flow.data.name_child}} y tu disfruten de *tiempo Sésamo*."
+      }
+    },
+    {
+      "name": "wait_intro_1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "welcome2_010120",
+          "event": "success"
+        },
+        {
+          "next": "welcome2_010120",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1480,
+          "y": -490
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "Copy_of_reminder_2_endline",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1970,
+          "y": -1820
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hola de nuevo! Si el día de hoy *NO pudieron participar* en nuestra actividad de _Plaza Sésamo_, les informamos que los estaremos esperando el *día de mañana*, en la dirección: *{{flow.data.direccion}}*.\n\nRecuerda que debes asistir *junto con {{flow.data.name_child}}*, y llevar tu documento de identidad y el registro civil u otro documento del niño/a. 🤓\nTambién recuerda que por participar se llevarán a casa: 🎁\n - Un bono sodexo de $20.000\n - Un kit escolar de _Sésamo_ que incluye una lonchera, un libro infantil y otras sorpresas.\nTambién, si completas las actividades ¡participarás en la rifa de un celular!\n\nLos esperamos 🧸⏰."
+      }
+    },
+    {
+      "name": "Copy_of_welcome_final_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1980,
+          "y": -2060
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Las familias que miren más vídeos de Elmo *en febrero* podrán ganar un celular o un bono Sodexo.🎁 Debes ver los videos con {{flow.data.name_child}}. También, ¡podrás seguir teniendo recargas si sigues viendo videos!"
+      }
+    },
+    {
+      "name": "Copy_of_wait_intro",
+      "type": "run-function",
+      "transitions": [
+        {
+          "event": "success"
+        },
+        {
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 2290,
+          "y": -1820
+        },
+        "function_sid": "ZH8f9062359578fd4d1d51beea2fe67052",
+        "url": "https://aleatorio-1037.twil.io/short_wait"
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
