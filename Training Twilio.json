@@ -1,0 +1,1406 @@
+{
+  "description": "Capacitación Twilio",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "next": "incoming_message",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "next": "intro",
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -50,
+          "y": -70
+        }
+      }
+    },
+    {
+      "name": "intro",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_1_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 270
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Hola, {{flow.data.name}} 👋. Somos IPA Colombia 🇨🇴 . Te escribimos para que participes en una encuesta de prueba para la capacitación de Twilio. *¿Te gustaría participar?*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "espera_1_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_intro",
+          "event": "success"
+        },
+        {
+          "next": "split_intro",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 30,
+          "y": 250
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    },
+    {
+      "name": "split_intro",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_intro",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_reply",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Sí",
+              "arguments": [
+                "{{widgets.intro.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "Sí quiero participar,si quiero participar,sí quiero participar,sí,si,SI,SÍ"
+            }
+          ]
+        },
+        {
+          "next": "encriptador",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "No",
+              "arguments": [
+                "{{widgets.intro.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "No quiero participar,no quiero participar,NO QUIERO PARTICIPAR,NO,No,no"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.intro.inbound.Body}}",
+        "offset": {
+          "x": 350,
+          "y": 250
+        }
+      }
+    },
+    {
+      "name": "counter_error_intro",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_intro",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_intro  -%}\n{{flow.variables.counter_error_intro | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_intro"
+          }
+        ],
+        "offset": {
+          "x": 740,
+          "y": 250
+        }
+      }
+    },
+    {
+      "name": "error_message_intro",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_1_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_1_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1510,
+          "y": 250
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo tu respuesta.\n\nRecuerda que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas."
+      }
+    },
+    {
+      "name": "split_error_intro",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_intro",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less_than 4",
+              "arguments": [
+                "{{flow.variables.counter_error_intro}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_intro}}",
+        "offset": {
+          "x": 1130,
+          "y": 240
+        }
+      }
+    },
+    {
+      "name": "espera_1_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "intro",
+          "event": "success"
+        },
+        {
+          "next": "intro",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 1880,
+          "y": 250
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    },
+    {
+      "name": "set_initial_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "end_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_fail-%}\n{{flow.variables.set_initial_fail| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_fail"
+          }
+        ],
+        "offset": {
+          "x": 2700,
+          "y": 520
+        }
+      }
+    },
+    {
+      "name": "set_initial_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "end_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_no_reply-%}\n{{flow.variables.set_initial_no_reply| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 2710,
+          "y": 740
+        }
+      }
+    },
+    {
+      "name": "end_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "sent"
+        },
+        {
+          "next": "encriptador",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -260,
+          "y": 1990
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Muchas gracias por tu tiempo!"
+      }
+    },
+    {
+      "name": "encriptador",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "publish_gsheets",
+          "event": "success"
+        },
+        {
+          "next": "publish_gsheets",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS5949c22ca9f9466f3fdce2bee3444d86",
+        "environment_sid": "ZE729eedfdb90187138000f5837539bbb8",
+        "offset": {
+          "x": -260,
+          "y": 2230
+        },
+        "function_sid": "ZHcf5850e5252ebf2126dff2056ee6e1a5",
+        "parameters": [
+          {
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "value": "{{widgets.pregunta_2.inbound.Body}}",
+            "key": "pregunta_2"
+          },
+          {
+            "value": "{{widgets.pregunta_3.inbound.Body}}",
+            "key": "pregunta_3"
+          },
+          {
+            "value": "{{flow.data.Number}}",
+            "key": "Number"
+          },
+          {
+            "value": "{{widgets.pregunta_4.inbound.Body}}",
+            "key": "pregunta_4"
+          }
+        ],
+        "url": "https://encrypt-4924.twil.io/encripter"
+      }
+    },
+    {
+      "name": "publish_gsheets",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "end_2",
+          "event": "success"
+        },
+        {
+          "next": "end_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS3e1fb230d81f1c7f6ed8e5bd8c7c5fcc",
+        "environment_sid": "ZE610cdb6a22ba0e754b821468daa70175",
+        "offset": {
+          "x": -260,
+          "y": 2460
+        },
+        "function_sid": "ZH6cab701579d0ee47498f139386e798b4",
+        "parameters": [
+          {
+            "value": "{{widgets.intro.inbound.Body}}",
+            "key": "intro"
+          },
+          {
+            "value": "{{widgets.pregunta_1.inbound.Body}}",
+            "key": "pregunta_1"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.pregunta_2}}",
+            "key": "pregunta_2"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.pregunta_3}}",
+            "key": "pregunta_3"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.name}}",
+            "key": "name"
+          },
+          {
+            "value": "{{flow.variables.set_initial_fail}}",
+            "key": "set_initial_fail"
+          },
+          {
+            "value": "{{flow.variables.set_initial_no_reply}}",
+            "key": "set_initial_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_survey_fail}}",
+            "key": "set_survey_fail"
+          },
+          {
+            "value": "{{flow.variables.set_survey_no_reply}}",
+            "key": "set_survey_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_initial_multierror}}",
+            "key": "set_initial_multierror"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.Number}}",
+            "key": "Number"
+          },
+          {
+            "value": "{{flow.data.grupo_envio}}",
+            "key": "grupo_envio"
+          },
+          {
+            "value": "{{flow.data.caseid}}",
+            "key": "caseid"
+          },
+          {
+            "value": "{{flow.variables.set_reply}}",
+            "key": "set_reply"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.pregunta_4}}",
+            "key": "pregunta_4"
+          }
+        ],
+        "url": "https://publish-function-6341.twil.io/publish_1"
+      }
+    },
+    {
+      "name": "end_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -270,
+          "y": 2720
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Hemos finalizado la comunicación por este canal. \n\nEsta encuesta es automática por lo que te pedimos no responder a este chat.\n\n*¡Gracias!, cordialmente,*\n\n*_Equipo IPA_*"
+      }
+    },
+    {
+      "name": "set_initial_multierror",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "end_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_multierror-%}\n{{flow.variables.set_initial_multierror| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_multierror"
+          }
+        ],
+        "offset": {
+          "x": 2700,
+          "y": 300
+        }
+      }
+    },
+    {
+      "name": "pregunta_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_3_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -260,
+          "y": 960
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿A qué oficina de IPA perteneces?\n\nEnvía:\n*1* si tu respuesta es: Colombia\n*2* si tu respuesta es: México\n*3* si tu respuesta es: Perú",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "espera_3_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_pregunta_1",
+          "event": "success"
+        },
+        {
+          "next": "split_pregunta_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 110,
+          "y": 960
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    },
+    {
+      "name": "split_pregunta_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_pregunta_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "pregunta_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Col",
+              "arguments": [
+                "{{widgets.pregunta_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1, 1,1"
+            }
+          ]
+        },
+        {
+          "next": "pregunta_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Mex",
+              "arguments": [
+                "{{widgets.pregunta_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "2, 2,2"
+            }
+          ]
+        },
+        {
+          "next": "pregunta_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Per",
+              "arguments": [
+                "{{widgets.pregunta_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "3,3 , 3"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.pregunta_1.inbound.Body}}",
+        "offset": {
+          "x": 460,
+          "y": 970
+        }
+      }
+    },
+    {
+      "name": "counter_error_pregunta_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_pregunta_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_pregunta_1  -%}\n{{flow.variables.counter_error_pregunta_1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_pregunta_1"
+          }
+        ],
+        "offset": {
+          "x": 810,
+          "y": 960
+        }
+      }
+    },
+    {
+      "name": "split_error_pregunta_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "end_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_pregunta_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less_than 4",
+              "arguments": [
+                "{{flow.variables.counter_error_pregunta_1}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_pregunta_1}}",
+        "offset": {
+          "x": 1150,
+          "y": 960
+        }
+      }
+    },
+    {
+      "name": "error_message_pregunta_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_2_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_2_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1580,
+          "y": 960
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo tu respuesta.\n\nRecuerda que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas."
+      }
+    },
+    {
+      "name": "espera_2_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "pregunta_1",
+          "event": "success"
+        },
+        {
+          "next": "pregunta_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 1940,
+          "y": 960
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    },
+    {
+      "name": "bienvenida",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_2_a",
+          "event": "sent"
+        },
+        {
+          "next": "espera_2_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -290,
+          "y": 620
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Ya que nos diste tu consentimiento, ¡empecemos!",
+        "media_url": "https://i.imgur.com/ZtGNCEV.png"
+      }
+    },
+    {
+      "name": "espera_2_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "pregunta_1",
+          "event": "success"
+        },
+        {
+          "next": "pregunta_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 90,
+          "y": 610
+        },
+        "function_sid": "ZHce274fd969813f01d820af6598aea261",
+        "url": "https://functions-1164.twil.io/wait_long"
+      }
+    },
+    {
+      "name": "set_survey_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "end_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_survey_no_reply-%}\n{{flow.variables.set_survey_no_reply| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_survey_no_reply"
+          }
+        ],
+        "offset": {
+          "x": -890,
+          "y": 1380
+        }
+      }
+    },
+    {
+      "name": "set_survey_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "end_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_survey_fail-%}\n{{flow.variables.set_survey_fail| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_survey_fail "
+          }
+        ],
+        "offset": {
+          "x": -890,
+          "y": 1190
+        }
+      }
+    },
+    {
+      "name": "pregunta_2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_4_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -270,
+          "y": 1240
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Por favor escribe el número de tu *Cédula*.",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "espera_4_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_pregunta_2",
+          "event": "success"
+        },
+        {
+          "next": "split_pregunta_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 90,
+          "y": 1250
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    },
+    {
+      "name": "split_pregunta_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_pregunta_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "end_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "CC",
+              "arguments": [
+                "{{widgets.pregunta_2.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^\\d{1,10}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.pregunta_2.inbound.Body}}",
+        "offset": {
+          "x": 450,
+          "y": 1250
+        }
+      }
+    },
+    {
+      "name": "counter_error_pregunta_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_pregunta_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_pregunta_2  -%}\n{{flow.variables.counter_error_pregunta_2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_pregunta_2"
+          }
+        ],
+        "offset": {
+          "x": 810,
+          "y": 1250
+        }
+      }
+    },
+    {
+      "name": "split_error_pregunta_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "end_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_pregunta_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less_than 4",
+              "arguments": [
+                "{{flow.variables.counter_error_pregunta_2}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_pregunta_2}}",
+        "offset": {
+          "x": 1170,
+          "y": 1250
+        }
+      }
+    },
+    {
+      "name": "error_message_pregunta_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_4_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_4_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1570,
+          "y": 1250
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo tu respuesta.\n\nRecuerda que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas."
+      }
+    },
+    {
+      "name": "espera_4_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "pregunta_2",
+          "event": "success"
+        },
+        {
+          "next": "pregunta_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 1940,
+          "y": 1250
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    },
+    {
+      "name": "espera_5_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "pregunta_3",
+          "event": "success"
+        },
+        {
+          "next": "pregunta_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 1940,
+          "y": 1490
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    },
+    {
+      "name": "pregunta_3",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_5_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -270,
+          "y": 1490
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Por favor escribe el número de tu documento local de identificación",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "espera_5_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_pregunta_3",
+          "event": "success"
+        },
+        {
+          "next": "split_pregunta_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 70,
+          "y": 1490
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    },
+    {
+      "name": "split_pregunta_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_pregunta_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "pregunta_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "ID",
+              "arguments": [
+                "{{widgets.pregunta_3.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^\\d{1,20}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.pregunta_3.inbound.Body}}",
+        "offset": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    },
+    {
+      "name": "counter_error_pregunta_3",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_pregunta_3",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_pregunta_3  -%}\n{{flow.variables.counter_error_pregunta_3 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_pregunta_3"
+          }
+        ],
+        "offset": {
+          "x": 820,
+          "y": 1490
+        }
+      }
+    },
+    {
+      "name": "split_error_pregunta_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "pregunta_4",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_pregunta_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less_than 4",
+              "arguments": [
+                "{{flow.variables.counter_error_pregunta_3}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_pregunta_3}}",
+        "offset": {
+          "x": 1170,
+          "y": 1490
+        }
+      }
+    },
+    {
+      "name": "error_message_pregunta_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_5_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_5_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1570,
+          "y": 1490
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo tu respuesta.\n\nRecuerda que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas."
+      }
+    },
+    {
+      "name": "incoming_message",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -800,
+          "y": 110
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Este canal de comunicación no está habilitado para la recepción de mensajes."
+      }
+    },
+    {
+      "name": "set_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "bienvenida",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reply-%}\n{{flow.variables.set_reply| plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_reply"
+          }
+        ],
+        "offset": {
+          "x": -720,
+          "y": 620
+        }
+      }
+    },
+    {
+      "name": "pregunta_4",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_6_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_survey_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_survey_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -270,
+          "y": 1720
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Qué tan satisfechxs están con la primera sesión de la capacitación?\n\nResponde:\n\n*1* si tu respuesta es *Muy insatisfechx*\n*2* si tu respuesta es *Insatisfechx*\n*3* si tu respuesta es *Ni satisfechx ni insatisfechx*\n*4* si tu respuesta es *Satisfechx*\n*5* si tu respuesta es *Muy satisfechx*\n*6* si tu respuesta es *No asistí a la primera sesión*",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "espera_6_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_pregunta_4",
+          "event": "success"
+        },
+        {
+          "next": "split_pregunta_4",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 80,
+          "y": 1720
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    },
+    {
+      "name": "split_pregunta_4",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_pregunta_4",
+          "event": "noMatch"
+        },
+        {
+          "next": "end_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "satis",
+              "arguments": [
+                "{{widgets.pregunta_4.inbound.Body}}"
+              ],
+              "type": "less_than",
+              "value": "7"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.pregunta_4.inbound.Body}}",
+        "offset": {
+          "x": 460,
+          "y": 1720
+        }
+      }
+    },
+    {
+      "name": "counter_error_pregunta_4",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_pregunta_4",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_pregunta_4  -%}\n{{flow.variables.counter_error_pregunta_4 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_pregunta_3"
+          }
+        ],
+        "offset": {
+          "x": 840,
+          "y": 1720
+        }
+      }
+    },
+    {
+      "name": "split_error_pregunta_4",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "end_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_pregunta_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value less_than 4",
+              "arguments": [
+                "{{flow.variables.counter_error_pregunta_4}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_pregunta_4}}",
+        "offset": {
+          "x": 1180,
+          "y": 1720
+        }
+      }
+    },
+    {
+      "name": "error_message_pregunta_4",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_6_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_6_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1580,
+          "y": 1720
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Me temo que no entiendo tu respuesta.\n\nRecuerda que esta encuesta es automática y no entenderá ninguna respuesta diferente a las opciones ofrecidas."
+      }
+    },
+    {
+      "name": "espera_6_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "pregunta_4",
+          "event": "success"
+        },
+        {
+          "next": "pregunta_4",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS8792dd384f92cee05dcac7f5c42fa4f9",
+        "environment_sid": "ZE62b5f5043d080f46d6b400ad7b9d9618",
+        "offset": {
+          "x": 1950,
+          "y": 1720
+        },
+        "function_sid": "ZH5fb2744a5e593ea097874cadc4812c6e",
+        "url": "https://functions-1164.twil.io/wait"
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
