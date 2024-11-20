@@ -1,0 +1,5659 @@
+{
+  "description": "FIM_screening",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "next": "incoming_message",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "next": "welcome",
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -350,
+          "y": -1040
+        }
+      }
+    },
+    {
+      "name": "espera_1_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_time_1",
+          "event": "success"
+        },
+        {
+          "next": "set_time_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -20,
+          "y": -670
+        },
+        "function_sid": "ZHc4579d2e257656e700137f1c4928e1d6",
+        "url": "https://aletorio-1295.twil.io/15sec_wait"
+      }
+    },
+    {
+      "name": "incoming_message",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -800,
+          "y": -700
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Este canal de comunicación no está habilitado para la recepción de mensajes."
+      }
+    },
+    {
+      "name": "set_time_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "set_time_start",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{{'now' | date: \"%m %d %Z %k %M %S\"}}",
+            "key": "set_time_1"
+          }
+        ],
+        "offset": {
+          "x": 300,
+          "y": -670
+        }
+      }
+    },
+    {
+      "name": "welcome_piloto_scr",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "verif_1_pilot",
+          "event": "sent"
+        },
+        {
+          "next": "verif_1_pilot",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -580,
+          "y": -1310
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Hola👋! *Somos _IPA Colombia_* 🇨🇴. El _Sisbén_ nos compartió su información de contacto para invitarle a participar en una *encuesta para un estudio de investigación de _IPA_* 🌎.\n\n*Si usted termina haciendo parte de este estudio, participará en la rifa de un bono Sodexo por un valor de $40.000 pesos*. Contactaremos al ganador en septiembre y anunciaremos los resultados a todos los participantes.\n\nAntes de responder la encuesta, nos gustaría validar su identidad. Por favor lea atentamente las instrucciones y *conteste únicamente con el número asignado a la opción de respuesta de cada pregunta*."
+      }
+    },
+    {
+      "name": "verif_1_pilot",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "verif_1_rem1_pilot",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "verif_1_rem1_pilot",
+          "event": "timeout"
+        },
+        {
+          "next": "verif_1_rem1_pilot",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -280,
+          "y": -1310
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "_Podrá responder a esta encuesta hasta el domingo en la tarde_⏳.\n\n¿Es usted {{flow.data.name}}?\n\nResponda con el número:\n\n*1*  SÍ es usted\n*2*  NO es usted",
+        "timeout": "86400"
+      }
+    },
+    {
+      "name": "verif_1_rem1_pilot",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "verif_1_rem3",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "verif_1_rem3",
+          "event": "timeout"
+        },
+        {
+          "next": "verif_1_rem3",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 20,
+          "y": -1310
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Ha pasado un rato, queremos saber si nos estamos comunicando con {{flow.data.name}}. _Podrá responder a esta encuesta hasta el domingo en la tarde_⏳.\n\n¿Es usted {{flow.data.name}}?\n\nResponda con el número:\n\n*1*  SÍ es usted\n*2*  NO es usted",
+        "timeout": "86400"
+      }
+    },
+    {
+      "name": "verif_1_rem3",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "welcome_piloto_scr",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "welcome_piloto_scr",
+          "event": "timeout"
+        },
+        {
+          "next": "welcome_piloto_scr",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 320,
+          "y": -1310
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Ha pasado un rato, queremos saber si nos estamos comunicando con {{flow.data.name}}. _Está encuesta sólo estará abierta por 24 horas más_⏳. \n\n¿Es usted {{flow.data.name}}?\n\nResponda con el número:\n\n*1*  SÍ es usted\n*2*  NO es usted",
+        "timeout": "86400"
+      }
+    },
+    {
+      "name": "pre_consent_pilot",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "pre_consent2_pilot",
+          "event": "sent"
+        },
+        {
+          "next": "pre_consent2_pilot",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 700,
+          "y": -1320
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Perfecto! {{flow.data.name}}, ahora que hemos validado su identidad, le *invitamos a participar en la primera encuesta de un estudio de investigación de _IPA_*, cuyo objetivo es mejorar el acceso a información de programas sociales para la población venezolana en Colombia. La encuesta *le tomará de 4 a 8 minutos*.\n\nPuede dejar de responder en cualquier momento, o saltar cualquier pregunta que prefiera no responder escribiendo *omitir*. No hay penalización por esto, y no perderá ningún beneficio que reciba actualmente."
+      }
+    },
+    {
+      "name": "pre_consent2_pilot",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "pre_consent_pilot",
+          "event": "sent"
+        },
+        {
+          "next": "pre_consent_pilot",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1000,
+          "y": -1320
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por último, *por favor tenga en cuenta que esta encuesta es sólo una parte de un estudio más grande*. En este podría recibir mensajes y otra encuesta.\n\nPara más información sobre este _consentimiento informado_ *ingrese al siguiente link*:  https://bit.ly/consent_ipa_p_CFM_2023",
+        "media_url": ""
+      }
+    },
+    {
+      "name": "welcome",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_1_a",
+          "event": "sent"
+        },
+        {
+          "next": "set_intro_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -340,
+          "y": -670
+        },
+        "content_variables": [
+          {
+            "value": "{{flow.data.name}}",
+            "key": "1"
+          }
+        ],
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "content_sid": "HXd26034ea320e99de4f9556e6bb0b8eb4",
+        "body": "¡Hola {{flow.data.name}}! 👋  Somos IPA Colombia, una organización sin ánimo de lucro de investigación comprometida en encontrar y promover soluciones a problemas de desarrollo.\n\nSisbén nos compartió su información de contacto para invitarle a participar en una encuesta para un estudio de IPA sobre estrategias de comunicación para resaltar historias de vida en Colombia. La encuesta le tomará aproximadamente 5-10 minutos ⏱️.",
+        "media_url": ""
+      }
+    },
+    {
+      "name": "welcome_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_wel_2",
+          "event": "sent"
+        },
+        {
+          "next": "set_intro_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -340,
+          "y": -460
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "content_sid": "HXebcbbf17b6e767775bb2ab8be0609cb6",
+        "body": "Si usted completa las actividades de este estudio, usted recibirá por este medio:\n\n🛒  Un bono digital de supermercado *D1* por valor de $15.000 pesos.\n📲  Y una recarga telefónica de alrededor de $5.000 pesos."
+      }
+    },
+    {
+      "name": "espera_wel_2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_1",
+          "event": "success"
+        },
+        {
+          "next": "verif_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -20,
+          "y": -460
+        },
+        "function_sid": "ZHabe6862439f1e212d388ab6222693bcb",
+        "url": "https://aletorio-1295.twil.io/5sec_wait"
+      }
+    },
+    {
+      "name": "verif_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_verif_1",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "verif_1_reminder",
+          "event": "timeout"
+        },
+        {
+          "next": "set_intro_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -340,
+          "y": -240
+        },
+        "content_variables": [
+          {
+            "value": "{{flow.data.name}}",
+            "key": "1"
+          }
+        ],
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "content_sid": "HX2da07f97e3d86e9d460140efcf9f3b5d",
+        "body": "Podrá completar esta encuesta durante las próximas 24 horas  ⌚.\n\n¿Es usted  {{flow.data.name}}?",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_verif_1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -20,
+          "y": -240
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.verif_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1, 1,1 ,*1*,1.,1. , 1.,Si, Si,Si ,Sí, Sí,Sí ,si,"
+            }
+          ]
+        },
+        {
+          "next": "verif_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.verif_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_1.inbound.Body}}",
+        "offset": {
+          "x": 300,
+          "y": -240
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_1 -%}\n{{flow.variables.counter_error_verif_1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_1"
+          }
+        ],
+        "offset": {
+          "x": 620,
+          "y": -240
+        }
+      }
+    },
+    {
+      "name": "split_error_v_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_intro_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_verif_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_1}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_1}}",
+        "offset": {
+          "x": 940,
+          "y": -240
+        }
+      }
+    },
+    {
+      "name": "error_message_verif_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_2_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_2_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1260,
+          "y": -240
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1 o 0.*\n\nSoy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_2_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_1",
+          "event": "success"
+        },
+        {
+          "next": "verif_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1580,
+          "y": -240
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_1_reminder",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_verif_1_reminder",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_intro_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_reminder_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -20,
+          "y": -60
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Recuerde que aún puede contestar la encuesta ⌚.\n\n¿Es usted {{flow.data.name}}?",
+        "timeout": "36000"
+      }
+    },
+    {
+      "name": "set_intro_multierror",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_multierror",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro_multierror -%}\n{{flow.variables.set_intro_multierror | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_intro_multierror"
+          }
+        ],
+        "offset": {
+          "x": 2940,
+          "y": -680
+        }
+      }
+    },
+    {
+      "name": "set_intro_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro_fail -%}\n{{flow.variables.set_intro_fail | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_intro_fail"
+          }
+        ],
+        "offset": {
+          "x": 2940,
+          "y": -510
+        }
+      }
+    },
+    {
+      "name": "espera_verif_1_reminder",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_reminder1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_reminder1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 300,
+          "y": -60
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_reminder1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_1_rem",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.verif_1_reminder.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "verif_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.verif_1_reminder.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_1_reminder.inbound.Body}}",
+        "offset": {
+          "x": 620,
+          "y": -60
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_1_rem",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_1_rem -%}\n{{flow.variables.counter_error_verif_1_rem | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_1_rem"
+          }
+        ],
+        "offset": {
+          "x": 940,
+          "y": -60
+        }
+      }
+    },
+    {
+      "name": "split_error_v_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_reminder_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_verif_1_rem",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_1_rem}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_1_rem}}",
+        "offset": {
+          "x": 1260,
+          "y": -60
+        }
+      }
+    },
+    {
+      "name": "error_message_verif_1_rem",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_3_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_3_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1580,
+          "y": -60
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1 o 0.*\n\nSoy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_3_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_1_reminder",
+          "event": "success"
+        },
+        {
+          "next": "verif_1_reminder",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1900,
+          "y": -60
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "set_intro_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_intro_no_reply -%}\n{{flow.variables.set_intro_no_reply | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_intro_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 2940,
+          "y": -320
+        }
+      }
+    },
+    {
+      "name": "verif_2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_verif_2",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 270
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Conoce a {{flow.data.name}}? ¿Qué relación hay entre usted y {{flow.data.name}}?   \n\nConteste únicamente con el número de acuerdo a las siguientes opciones:  \n*1* si es miembro de su familia\n*2* si es su vecino \n*3* si es amigo suyo\n*4* si usted no conoce a {{flow.data.name}} \n*5* si no aplica ninguna de las anteriores",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_verif_2",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_2",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -10,
+          "y": 270
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.verif_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO."
+            }
+          ]
+        },
+        {
+          "next": "verif_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.verif_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*2*,*2.*,2, 2,2 ,2.,dos,DOS,dos ,DOS , dos, DOS,dos.,DOS.,DOS,DOS , DOS,DOS.,Dos,Dos , Dos,Dos.,dos,dos , dos,dos.,dOS,dOS , dOS,dOS."
+            }
+          ]
+        },
+        {
+          "next": "verif_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "3",
+              "arguments": [
+                "{{widgets.verif_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*3*,*3.*,3, 3,3 ,3.,tres,TRES,tres ,TRES , tres, TRES,tres.,TRES.,TRES,TRES , TRES,TRES.,Tres,Tres , Tres,Tres.,tres,tres , tres,tres."
+            }
+          ]
+        },
+        {
+          "next": "bye_note_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "4",
+              "arguments": [
+                "{{widgets.verif_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*4*,*4.*,4, 4,4 ,4.,cuatro,CUATRO,cuatro ,CUATRO , cuatro, CUATRO,cuatro.,CUATRO.,CUATRO,CUATRO , CUATRO,CUATRO.,Cuatro,Cuatro , Cuatro,Cuatro.,cuatro,cuatro , cuatro,cuatro."
+            }
+          ]
+        },
+        {
+          "next": "bye_note_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "5",
+              "arguments": [
+                "{{widgets.verif_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*5*,*5.*,5, 5,5 ,5.,cinco,CINCO,cinco ,CINCO , cinco, CINCO,cinco.,CINCO.,CINCO,CINCO , CINCO,CINCO.,Cinco,Cinco , Cinco,Cinco.,cinco,cinco , cinco,cinco."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_2.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 270
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_3",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_2 -%}\n{{flow.variables.counter_error_verif_2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_2"
+          }
+        ],
+        "offset": {
+          "x": 680,
+          "y": 270
+        }
+      }
+    },
+    {
+      "name": "split_error_v_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_verif_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_2}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_2}}",
+        "offset": {
+          "x": 1000,
+          "y": 270
+        }
+      }
+    },
+    {
+      "name": "error_message_verif_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_verif_2_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_verif_2_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1320,
+          "y": 270
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1,2,3,4 o 5.*\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_verif_2_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_2",
+          "event": "success"
+        },
+        {
+          "next": "verif_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1640,
+          "y": 270
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_3",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_verif_3",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 490
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Es este el mejor número de celular para contactar a {{flow.data.name}} ?    \n\nResponda con el número:  \n*1* si SÍ  \n*0* si NO",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_verif_3",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_3",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -10,
+          "y": 490
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.verif_3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,Uno, Uno,Uno ,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "verif_5",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.verif_3.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,Cero, Cero,Cero ,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_3.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 490
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_3",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_4",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.counter_error_verif_3 -%}\n{{flow.variables.counter_error_verif_3 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_3"
+          }
+        ],
+        "offset": {
+          "x": 630,
+          "y": 490
+        }
+      }
+    },
+    {
+      "name": "set_initial_multierror",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_multierror",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_multierror -%}\n{{flow.variables.set_initial_multierror | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_multierror"
+          }
+        ],
+        "offset": {
+          "x": 2990,
+          "y": 1460
+        }
+      }
+    },
+    {
+      "name": "set_initial_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_fail -%}\n{{flow.variables.set_initial_fail | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_fail"
+          }
+        ],
+        "offset": {
+          "x": 2990,
+          "y": 1630
+        }
+      }
+    },
+    {
+      "name": "set_initial_no_reply",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_initial_no_reply -%}\n{{flow.variables.set_initial_no_reply | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_initial_no_reply"
+          }
+        ],
+        "offset": {
+          "x": 2990,
+          "y": 1800
+        }
+      }
+    },
+    {
+      "name": "espera_err_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "bye_note_3",
+          "event": "success"
+        },
+        {
+          "next": "bye_note_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 2990,
+          "y": 1970
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_error_v_4",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_verif_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_3}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_3}}",
+        "offset": {
+          "x": 950,
+          "y": 490
+        }
+      }
+    },
+    {
+      "name": "error_message_verif_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_verif_3_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_verif_3_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1270,
+          "y": 490
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1 o 0.*\n\nSoy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_verif_3_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_3",
+          "event": "success"
+        },
+        {
+          "next": "verif_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1590,
+          "y": 480
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_4",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_verif_4",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 690
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Podría pasarle el telefono celular a  {{flow.data.name}} para contestar unas preguntas cortas para participar en la encuesta?  ({{flow.data.name}}  puede contestar en cualquier momento del día).    \n\nResponda con el número:  \n*1* si {{flow.data.name}} está disponible para contestar las preguntas  \n*0* si {{flow.data.name}} NO está disponible en todo el día",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_verif_4",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_4",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_4",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -10,
+          "y": 690
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_4",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_4",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.verif_4.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,Uno, Uno,Uno ,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, S������������,Si.,Sí.,si,sí,si ,s�� , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "bye_note_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.verif_4.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,Cero, Cero,Cero ,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_4.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 690
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_4",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_5",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_4 -%}\n{{flow.variables.counter_error_verif_4 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_4"
+          }
+        ],
+        "offset": {
+          "x": 630,
+          "y": 690
+        }
+      }
+    },
+    {
+      "name": "split_error_v_5",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_verif_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_4}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_4}}",
+        "offset": {
+          "x": 950,
+          "y": 690
+        }
+      }
+    },
+    {
+      "name": "error_message_verif_4",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_verif_4_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_verif_4_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1270,
+          "y": 690
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1 o 0.*\n\nSoy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_verif_4_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_4",
+          "event": "success"
+        },
+        {
+          "next": "verif_4",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1590,
+          "y": 690
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_5",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_verif_5",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 890
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Tiene un número de celular donde podríamos contactar a  {{flow.data.name}}?     \n\nResponda con el número:  \n*1* si Sí  \n*0* si NO",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_verif_5",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_5",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_5",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -10,
+          "y": 890
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_5",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_5",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_6",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.verif_5.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,Uno, Uno,Uno ,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "bye_note_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.verif_5.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,Cero, Cero,Cero ,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_5.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 890
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_5",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_6",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_5 -%}\n{{flow.variables.counter_error_verif_5 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_5"
+          }
+        ],
+        "offset": {
+          "x": 630,
+          "y": 890
+        }
+      }
+    },
+    {
+      "name": "split_error_v_6",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_verif_5",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_5}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_5}}",
+        "offset": {
+          "x": 950,
+          "y": 890
+        }
+      }
+    },
+    {
+      "name": "error_message_verif_5",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_verif_5_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_verif_5_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1270,
+          "y": 890
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1 o 0.*\n\nSoy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_verif_5_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_5",
+          "event": "success"
+        },
+        {
+          "next": "verif_5",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1590,
+          "y": 890
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_6",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_verif_6",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 1080
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "¿Cuál es el número de celular para contactar a  {{flow.data.name}} ?    \n\nPor favor escriba *únicamente el número del teléfono*",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_verif_6",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_6",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_6",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -10,
+          "y": 1080
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_6",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_6",
+          "event": "noMatch"
+        },
+        {
+          "next": "bye_note_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Number",
+              "arguments": [
+                "{{widgets.verif_6.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[3-9][0-9]{9}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_6.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 1080
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_6",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_7",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_6 -%}\n{{flow.variables.counter_error_verif_6 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_6"
+          }
+        ],
+        "offset": {
+          "x": 630,
+          "y": 1080
+        }
+      }
+    },
+    {
+      "name": "split_error_v_7",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_verif_6",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_6}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_6}}",
+        "offset": {
+          "x": 950,
+          "y": 1080
+        }
+      }
+    },
+    {
+      "name": "error_message_verif_6",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_verif_6_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_verif_6_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1270,
+          "y": 1080
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribió. \n\nPor favor únicamente *digite el número de teléfono* válido. No debe ser mayor a 10 dígitos y debe empezar por el número *3*.\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_verif_6_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_6",
+          "event": "success"
+        },
+        {
+          "next": "verif_6",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1590,
+          "y": 1080
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_dob_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_12_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 1320
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "{{flow.data.name}}, para validar que nos estamos comunicando con usted por favor *ingrese su año de nacimiento*. El Sisbén nos brindó esta información.    \n\nPor favor, a continuación, ingrese solo el año en que nació, en números, sin comas (,) o puntos (.).  \n\n*Por ejemplo: 1990*",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_12_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_dob_1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_dob_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -10,
+          "y": 1320
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_dob_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_verif_dob_1_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "number",
+              "arguments": [
+                "{{widgets.verif_dob_1.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[1-2][0-9]{3}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_1.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 1320
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_dob_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_11",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_dob_1 -%}\n{{flow.variables.counter_error_verif_dob_1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_dob_1"
+          }
+        ],
+        "offset": {
+          "x": 630,
+          "y": 1320
+        }
+      }
+    },
+    {
+      "name": "split_error_v_11",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_11",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_dob_1}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_dob_1}}",
+        "offset": {
+          "x": 950,
+          "y": 1320
+        }
+      }
+    },
+    {
+      "name": "error_message_v_11",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_12_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_12_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1270,
+          "y": 1320
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor *ingrese únicamente el número de su año de nacimiento*, en números, sin puntos(.) ni comas(,). Recuerde que deben ser 4 dígitos.\n\nPor ejemplo: *1990*\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_12_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_1",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1590,
+          "y": 1320
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_1_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "verif_dob_1_err1",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "year",
+              "arguments": [
+                "{{widgets.verif_dob_1.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.year}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_1.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 1540
+        }
+      }
+    },
+    {
+      "name": "verif_dob_1_err1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_13_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -320,
+          "y": 1800
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "El año de nacimiento que ingresó no coincide con el año registrado en el Sisbén para {{flow.data.name}}. Por favor inténtelo nuevamente.\n \nRecuerde ingresar solo el año en que nació, en números, sin puntos (.) ni comas (,).\n\n*Por ejemplo: 1990*",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_13_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_dob_1_err1_1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_dob_1_err1_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 0,
+          "y": 1800
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_1_err1_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_dob_1_err1",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_verif_dob_1_err1_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "number",
+              "arguments": [
+                "{{widgets.verif_dob_1_err1.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[1-2][0-9]{3}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_1_err1.inbound.Body}}",
+        "offset": {
+          "x": 320,
+          "y": 1800
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_dob_1_err1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_12",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_dob_1_err1 -%}\n{{flow.variables.counter_error_verif_dob_1_err1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_dob_1_err1"
+          }
+        ],
+        "offset": {
+          "x": 640,
+          "y": 1800
+        }
+      }
+    },
+    {
+      "name": "split_verif_dob_1_err1_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "espera_14_a",
+          "event": "noMatch"
+        },
+        {
+          "next": "verif_dob_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "year",
+              "arguments": [
+                "{{widgets.verif_dob_1_err1.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.year}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_1_err1.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 2000
+        }
+      }
+    },
+    {
+      "name": "espera_14_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_1_err2",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_1_err2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 640,
+          "y": 2000
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_error_v_12",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_12",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_dob_1_err1}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_dob_1_err1}}",
+        "offset": {
+          "x": 960,
+          "y": 1800
+        }
+      }
+    },
+    {
+      "name": "error_message_v_12",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_13_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_13_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1280,
+          "y": 1800
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor *ingrese únicamente el número de su año de nacimiento*, en números, sin puntos(.) ni comas(,). Recuerde que deben ser 4 dígitos.\n\nPor ejemplo: *1990*\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_13_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_1_err1",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_1_err1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1600,
+          "y": 1800
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_dob_1_err2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_15_a",
+          "event": "sent"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 2200
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Lo sentimos, pero el año de nacimiento que usted ha ingresado, {{flow.data.name}}, sigue *sin coincidir* con el registrado en el _Sisbén_. Por lo tanto, no hemos podido validar su identidad."
+      }
+    },
+    {
+      "name": "espera_15_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_verif_wrong",
+          "event": "success"
+        },
+        {
+          "next": "set_verif_wrong",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -10,
+          "y": 2200
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_dob_2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_16_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 2410
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "Ahora, {{flow.data.name}}, por favor marque *el número al que corresponda su mes de nacimiento* para terminar el proceso de validación.\n\nResponda con el número que corresponda:  \n*1* Enero\n*2* Febrero\n*3* Marzo\n*4* Abril\n*5* Mayo\n*6* Junio\n*7* Julio\n*8* Agosto\n*9* Septiembre\n*10* Octubre\n*11* Noviembre\n*12* Diciembre",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_16_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_dob_2_1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_dob_2_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -10,
+          "y": 2410
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_2_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_dob_2_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_verif_dob_2_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "number",
+              "arguments": [
+                "{{widgets.verif_dob_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,6,7,8,9,10,11,12,01,02,03,04,05,06,07,08,09"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 2410
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_dob_2_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_13",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_dob_2_1 -%}\n{{flow.variables.counter_error_verif_dob_2_1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_dob_2_1"
+          }
+        ],
+        "offset": {
+          "x": 640,
+          "y": 2410
+        }
+      }
+    },
+    {
+      "name": "split_verif_dob_2_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "split_verif_dob_2_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_verif_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "month",
+              "arguments": [
+                "{{widgets.verif_dob_2.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.month}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 2630
+        }
+      }
+    },
+    {
+      "name": "split_verif_dob_2_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "verif_dob_2_err1",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_verif_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "month",
+              "arguments": [
+                "{{widgets.verif_dob_2.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.month_cero}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2.inbound.Body}}",
+        "offset": {
+          "x": 640,
+          "y": 2630
+        }
+      }
+    },
+    {
+      "name": "split_error_v_13",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_13",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_dob_2_1}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_dob_2_1}}",
+        "offset": {
+          "x": 970,
+          "y": 2410
+        }
+      }
+    },
+    {
+      "name": "error_message_v_13",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_16_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_16_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1290,
+          "y": 2410
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor *ingrese únicamente el número al que corresponde el mes de su nacimiento*, en números, sin puntos(.) ni comas(,).\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_16_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_2",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1610,
+          "y": 2410
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_dob_2_err1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_17_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 2850
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "body": "El mes de nacimiento que usted ingresó no coincide con el registrado en el Sisbén. \n\nPor favor, marque únicamente *el número al que corresponda su mes de nacimiento*. \n  \nResponda con el número que corresponda:  \n*1* Enero\n*2* Febrero\n*3* Marzo\n*4* Abril\n*5* Mayo\n*6* Junio\n*7* Julio\n*8* Agosto\n*9* Septiembre\n*10* Octubre\n*11* Noviembre\n*12* Diciembre",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_17_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_verif_dob_2_err1",
+          "event": "success"
+        },
+        {
+          "next": "split_verif_dob_2_err1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -10,
+          "y": 2850
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_verif_dob_2_err1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_verif_dob_2_err1",
+          "event": "noMatch"
+        },
+        {
+          "next": "split_verif_dob_2_err1_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "number",
+              "arguments": [
+                "{{widgets.verif_dob_2_err1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "1,2,3,4,5,6,7,8,9,10,11,12,01,02,03,04,05,06,07,08,09"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 2850
+        }
+      }
+    },
+    {
+      "name": "counter_error_verif_dob_2_err1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_v_14",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_verif_dob_2_err1 -%}\n{{flow.variables.counter_error_verif_dob_2_err1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_verif_dob_2_err1"
+          }
+        ],
+        "offset": {
+          "x": 640,
+          "y": 2850
+        }
+      }
+    },
+    {
+      "name": "split_error_v_14",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_v_14",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_verif_dob_2_err1}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_verif_dob_2_err1}}",
+        "offset": {
+          "x": 970,
+          "y": 2850
+        }
+      }
+    },
+    {
+      "name": "split_verif_dob_2_err1_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "split_verif_dob_2_err1_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_verif_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "month",
+              "arguments": [
+                "{{widgets.verif_dob_2_err1.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.month}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+        "offset": {
+          "x": 310,
+          "y": 3070
+        }
+      }
+    },
+    {
+      "name": "split_verif_dob_2_err1_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "verif_dob_2_err2",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_verif_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "month",
+              "arguments": [
+                "{{widgets.verif_dob_2_err1.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "{{flow.data.month_cero}}"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+        "offset": {
+          "x": 640,
+          "y": 3070
+        }
+      }
+    },
+    {
+      "name": "error_message_v_14",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_17_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_17_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1290,
+          "y": 2850
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor *ingrese únicamente el número al que corresponde el mes de su nacimiento*, en números, sin puntos(.) ni comas(,).\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_17_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "verif_dob_2_err1",
+          "event": "success"
+        },
+        {
+          "next": "verif_dob_2_err1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 1620,
+          "y": 2850
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "verif_dob_2_err2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_19_a",
+          "event": "sent"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -330,
+          "y": 3250
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Lo sentimos, pero el mes de nacimiento que usted ha ingresado, {{flow.data.name}}, sigue *sin coincidir* con el registrado en el _Sisbén_. Por lo tanto, no hemos podido validar su identidad."
+      }
+    },
+    {
+      "name": "espera_19_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "set_verif_wrong",
+          "event": "success"
+        },
+        {
+          "next": "set_verif_wrong",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -10,
+          "y": 3250
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "set_verif_complete",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "pre_consent_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_verif_complete -%}\n{{flow.variables.set_verif_complete | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_verif_complete"
+          }
+        ],
+        "offset": {
+          "x": 140,
+          "y": 3480
+        }
+      }
+    },
+    {
+      "name": "set_verif_wrong",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "bye_note_3",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_verif_wrong -%}\n{{flow.variables.set_verif_wrong | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_verif_wrong"
+          }
+        ],
+        "offset": {
+          "x": 480,
+          "y": 3480
+        }
+      }
+    },
+    {
+      "name": "bye_note_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "sent"
+        },
+        {
+          "next": "encriptador",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1580,
+          "y": 7080
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "Muchas gracias por su tiempo y atención. Que tenga un excelente resto de día\n\n*IPA Colombia*"
+      }
+    },
+    {
+      "name": "bye_note_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "sent"
+        },
+        {
+          "next": "encriptador",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1260,
+          "y": 7080
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "Muchas gracias por tu tiempo y atención.\n\nValidaremos la información correspondiente y en algunos días enviaremos un mensaje de texto a {{flow.data.name}} al nuevo número que nos proporcionó. {{flow.data.name}} recibirá la encuesta principal para participar en las actividades de las próximas 4 semanas.\n\nQue tenga un excelente resto de día.\n\nIPA Colombia"
+      }
+    },
+    {
+      "name": "pre_consent_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_20_a",
+          "event": "sent"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1150,
+          "y": 3870
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Perfecto, {{flow.data.name}}! ✅\n\nAhora que hemos validado su identidad, *le invitamos a participar en un estudio sobre estrategias de comunicación para resaltar historias de vida en Colombia*."
+      }
+    },
+    {
+      "name": "espera_20_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "pre_consent_2",
+          "event": "success"
+        },
+        {
+          "next": "pre_consent_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -830,
+          "y": 3870
+        },
+        "function_sid": "ZHabe6862439f1e212d388ab6222693bcb",
+        "url": "https://aletorio-1295.twil.io/5sec_wait"
+      }
+    },
+    {
+      "name": "pre_consent_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_21_a",
+          "event": "sent"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -510,
+          "y": 3870
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "Esta primera encuesta tomará aproximadamente 3 minutos.⚡\n\nLuego nos pondremos en contacto con usted en otras dos ocasiones para pedirle que responda 2 encuestas de aproximadamente 10-15 minutos cada una."
+      }
+    },
+    {
+      "name": "pre_consent_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_21_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_21_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 130,
+          "y": 3870
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "Puede dejar de responder en cualquier momento, o saltar cualquier pregunta que no desee responder *escribiendo \"77\" o \"omitir\"*, y no se verá afectado.\n\nPara obtener más información sobre el consentimiento informado, puede entrar a este enlace:  https://bit.ly/consentimiento_ipa"
+      }
+    },
+    {
+      "name": "espera_21_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "pre_consent_3",
+          "event": "success"
+        },
+        {
+          "next": "pre_consent_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -190,
+          "y": 3870
+        },
+        "function_sid": "ZHabe6862439f1e212d388ab6222693bcb",
+        "url": "https://aletorio-1295.twil.io/5sec_wait"
+      }
+    },
+    {
+      "name": "consent",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_22_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1160,
+          "y": 4110
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "{{flow.data.name}}, ¿desea participar en este estudio? \n\nPor favor, responda con el número: \n*1* si Sí desea participar \n*0* si NO desea participar",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_22_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_consent",
+          "event": "success"
+        },
+        {
+          "next": "split_consent",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": -830,
+          "y": 4140
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_consent",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_consent",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_consent",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.consent.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "bye_note_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.consent.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.consent.inbound.Body}}",
+        "offset": {
+          "x": -510,
+          "y": 4140
+        }
+      }
+    },
+    {
+      "name": "counter_error_consent",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_consent",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_consent -%}\n{{flow.variables.counter_error_consent | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_consent"
+          }
+        ],
+        "offset": {
+          "x": -190,
+          "y": 4140
+        }
+      }
+    },
+    {
+      "name": "split_error_consent",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_consent",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_consent}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_consent}}",
+        "offset": {
+          "x": 130,
+          "y": 4140
+        }
+      }
+    },
+    {
+      "name": "error_message_consent",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_23_a",
+          "event": "sent"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 450,
+          "y": 4140
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "body": "Por favor solo *marque un número de 1 o 0.*\n\nSoy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_23_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "consent",
+          "event": "success"
+        },
+        {
+          "next": "consent",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZSd73aba7643e3736e8cc7eebe42943a3a",
+        "environment_sid": "ZE994596ee291a61b68e069f4dcfe49707",
+        "offset": {
+          "x": 770,
+          "y": 4140
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "set_consent",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "set_time_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_consent -%}\n{{flow.variables.set_consent | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_consent"
+          }
+        ],
+        "offset": {
+          "x": -290,
+          "y": 4490
+        }
+      }
+    },
+    {
+      "name": "set_time_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "set_time_consent",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{{'now' | date: \"%m %d %Z %k %M %S\"}}",
+            "key": "set_time_2"
+          }
+        ],
+        "offset": {
+          "x": 60,
+          "y": 4490
+        }
+      }
+    },
+    {
+      "name": "phone_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_24_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1150,
+          "y": 4810
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Confirme si podemos comunicarnos con usted a este número de celular {{flow.data.p_number_original}}  para enviarle 2 encuestas adicionales y unos videos en las próximas 4 semanas. 📅\n\nResponda con el número: \n*1* si SÍ le podremos contactar al celular {{flow.data.p_number_original}}\n*0* si NO le podremos contactar al celular {{flow.data.p_number_original}}",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_24_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_phone_1",
+          "event": "success"
+        },
+        {
+          "next": "split_phone_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -830,
+          "y": 4810
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_phone_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_phone_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "phone_operator",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.phone_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "phone_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.phone_1.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.phone_1.inbound.Body}}",
+        "offset": {
+          "x": -510,
+          "y": 4810
+        }
+      }
+    },
+    {
+      "name": "counter_error_phone_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_phone_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_phone_1 -%}\n{{flow.variables.counter_error_phone_1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_phone_1"
+          }
+        ],
+        "offset": {
+          "x": -190,
+          "y": 4810
+        }
+      }
+    },
+    {
+      "name": "split_error_phone_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_phone_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_phone_1}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_phone_1}}",
+        "offset": {
+          "x": 130,
+          "y": 4810
+        }
+      }
+    },
+    {
+      "name": "error_message_phone_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_24_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_24_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 450,
+          "y": 4810
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribió. \nPor favor *digite el número correspondiente* a la opción que desea elegir. \n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_24_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "phone_1",
+          "event": "success"
+        },
+        {
+          "next": "phone_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 770,
+          "y": 4810
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "phone_2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_25_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1150,
+          "y": 5010
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "¿Tiene algún *celular con WhatsApp* al cual lo podamos contactar *a usted* para las actividades de las próximas cuatro semanas?\n\nResponda con el número:\n*1* SÍ\n*0* NO",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_25_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_phone_2",
+          "event": "success"
+        },
+        {
+          "next": "split_phone_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -830,
+          "y": 5010
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_phone_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_phone_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "phone_2_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.phone_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "bye_note_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.phone_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.phone_2.inbound.Body}}",
+        "offset": {
+          "x": -510,
+          "y": 5010
+        }
+      }
+    },
+    {
+      "name": "counter_error_phone_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_phone_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_phone_2 -%}\n{{flow.variables.counter_error_phone_2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_phone_2"
+          }
+        ],
+        "offset": {
+          "x": -190,
+          "y": 5010
+        }
+      }
+    },
+    {
+      "name": "split_error_phone_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_phone_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_phone_2}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_phone_2}}",
+        "offset": {
+          "x": 130,
+          "y": 5010
+        }
+      }
+    },
+    {
+      "name": "error_message_phone_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_25_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_25_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 450,
+          "y": 5010
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribió. \nPor favor *digite el número correspondiente* a la opción que desea elegir. \n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_25_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "phone_2",
+          "event": "success"
+        },
+        {
+          "next": "phone_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 770,
+          "y": 5010
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "phone_2_1",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_26_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -820,
+          "y": 5230
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Por favor *ingrese el número de celular con Whatsapp* al que preferiría que le contactemos para las actividades.  \n\nIngrese solo el número de celular, sin el código de país, comas (,) ni puntos (.)",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_26_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_phone_2_1",
+          "event": "success"
+        },
+        {
+          "next": "split_phone_2_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -500,
+          "y": 5230
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_phone_2_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_phone_2_1",
+          "event": "noMatch"
+        },
+        {
+          "next": "phone_2_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Number",
+              "arguments": [
+                "{{widgets.phone_2_1.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[3-9][0-9]{9}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.phone_2_1.inbound.Body}}",
+        "offset": {
+          "x": -180,
+          "y": 5230
+        }
+      }
+    },
+    {
+      "name": "counter_error_phone_2_1",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_phone_2_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_phone_2_1 -%}\n{{flow.variables.counter_error_phone_2_1 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_phone_2_1"
+          }
+        ],
+        "offset": {
+          "x": 140,
+          "y": 5230
+        }
+      }
+    },
+    {
+      "name": "split_error_phone_2_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_phone_2_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_phone_2_1}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_phone_2_1}}",
+        "offset": {
+          "x": 460,
+          "y": 5230
+        }
+      }
+    },
+    {
+      "name": "error_message_phone_2_1",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_26_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_26_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 780,
+          "y": 5230
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribió. \n\nPor favor únicamente *digite el número de teléfono* válido. No debe ser mayor a 10 dígitos y debe empezar por el número *3*.\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_26_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "phone_2_1",
+          "event": "success"
+        },
+        {
+          "next": "phone_2_1",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1100,
+          "y": 5230
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "phone_2_2",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_27_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -820,
+          "y": 5430
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "El número de teléfono que usted digitó es {{widgets.phone_2_1.inbound.Body}}. ¿Es correcto? \n\nResponda con el número:\n*1* si el teléfono es *correcto*\n*0* si el teléfono es *incorrecto*",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_27_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_phone_2_2",
+          "event": "success"
+        },
+        {
+          "next": "split_phone_2_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -500,
+          "y": 5430
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_phone_2_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_phone_2_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "phone_operator",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.phone_2_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "phone_2_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.phone_2_2.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.phone_2_2.inbound.Body}}",
+        "offset": {
+          "x": -180,
+          "y": 5430
+        }
+      }
+    },
+    {
+      "name": "counter_error_phone_2_2",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_phone_2_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_phone_2_2 -%}\n{{flow.variables.counter_error_phone_2_2 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_phone_2_2"
+          }
+        ],
+        "offset": {
+          "x": 140,
+          "y": 5430
+        }
+      }
+    },
+    {
+      "name": "split_error_phone_2_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_phone_2_2",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_phone_2_2}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_phone_2_2}}",
+        "offset": {
+          "x": 460,
+          "y": 5430
+        }
+      }
+    },
+    {
+      "name": "error_message_phone_2_2",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_27_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_27_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 780,
+          "y": 5430
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribió. \nPor favor *digite el número correspondiente* a la opción que desea elegir. \n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_27_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "phone_2_2",
+          "event": "success"
+        },
+        {
+          "next": "phone_2_2",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1100,
+          "y": 5430
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "phone_2_3",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_28_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -820,
+          "y": 5630
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "No hay problema. Por favor, vuelva a ingresar el número de celular con el que prefiere que nos comuniquemos con usted.\n\nIngrese solo el número de celular, sin el código de país, comas (,) ni puntos (.)",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_28_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_phone_2_3",
+          "event": "success"
+        },
+        {
+          "next": "split_phone_2_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -500,
+          "y": 5630
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_phone_2_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_phone_2_3",
+          "event": "noMatch"
+        },
+        {
+          "next": "phone_2_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Number",
+              "arguments": [
+                "{{widgets.phone_2_3.inbound.Body}}"
+              ],
+              "type": "regex",
+              "value": "^[3-9][0-9]{9}$"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.phone_2_3.inbound.Body}}",
+        "offset": {
+          "x": -180,
+          "y": 5630
+        }
+      }
+    },
+    {
+      "name": "counter_error_phone_2_3",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_phone_2_3",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_phone_2_3 -%}\n{{flow.variables.counter_error_phone_2_3 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_phone_2_3"
+          }
+        ],
+        "offset": {
+          "x": 140,
+          "y": 5630
+        }
+      }
+    },
+    {
+      "name": "split_error_phone_2_3",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_phone_2_3",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_phone_2_3}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_phone_2_3}}",
+        "offset": {
+          "x": 460,
+          "y": 5630
+        }
+      }
+    },
+    {
+      "name": "error_message_phone_2_3",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_28_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_28_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 780,
+          "y": 5630
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribió. \n\nPor favor únicamente *digite el número de teléfono* válido. No debe ser mayor a 10 dígitos y debe empezar por el número *3*.\n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_28_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "phone_2_3",
+          "event": "success"
+        },
+        {
+          "next": "phone_2_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1100,
+          "y": 5630
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "phone_2_4",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_29_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -820,
+          "y": 5830
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "El número de teléfono que usted digitó es {{widgets.phone_2_3.inbound.Body}}. ¿Es correcto? \n\nResponda con el número:\n*1* si el teléfono es *correcto*\n*0* si el teléfono es *incorrecto*",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_29_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_phone_2_4",
+          "event": "success"
+        },
+        {
+          "next": "split_phone_2_4",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -500,
+          "y": 5830
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_phone_2_4",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_phone_2_4",
+          "event": "noMatch"
+        },
+        {
+          "next": "phone_operator",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.phone_2_4.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1.,uno,UNO,uno ,UNO , uno, UNO,uno.,UNO.,SI,SÍ,SI ,SÍ , SI, SÍ,SI.,SÍ.,Si,Sí,Si ,Sí , Si, Sí,Si.,Sí.,si,sí,si ,sí , si, sí,si.,sí.,sI,sÍ,sI ,sÍ , sI, sÍ,sI.,sÍ."
+            }
+          ]
+        },
+        {
+          "next": "phone_operator",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "0",
+              "arguments": [
+                "{{widgets.phone_2_4.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO.*0*,*0.*,0, 0,0 ,0.,cero,CERO,cero ,CERO , cero, CERO,cero.,CERO.,NO,NO , NO,NO.,No,No , No,No.,no,no , no,no.,nO,nO , nO,nO."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.phone_2_4.inbound.Body}}",
+        "offset": {
+          "x": -180,
+          "y": 5830
+        }
+      }
+    },
+    {
+      "name": "counter_error_phone_2_4",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_phone_2_4",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_phone_2_4 -%}\n{{flow.variables.counter_error_phone_2_4 | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_phone_2_4"
+          }
+        ],
+        "offset": {
+          "x": 140,
+          "y": 5830
+        }
+      }
+    },
+    {
+      "name": "split_error_phone_2_4",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_phone_2_4",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_phone_2_4}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_phone_2_4}}",
+        "offset": {
+          "x": 460,
+          "y": 5830
+        }
+      }
+    },
+    {
+      "name": "error_message_phone_2_4",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_29_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_29_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 780,
+          "y": 5830
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribió. \n\nPor favor *digite el número correspondiente* a la opción que desea elegir. \n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_29_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "phone_2_4",
+          "event": "success"
+        },
+        {
+          "next": "phone_2_4",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 1100,
+          "y": 5830
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "phone_operator",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "espera_30_a",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "set_initial_no_reply",
+          "event": "timeout"
+        },
+        {
+          "next": "set_initial_fail",
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1140,
+          "y": 6060
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "¿Cuál es el proveedor de telefonía móvil del celular en el que podemos contactarle? 📡\n\nResponda con el número:\n*1* Claro\n*2* Movistar\n*3* Tigo\n*4* WOM\n*5* Virgin Mobile\n*6* Móvil Éxito\n*7* ETB\n*8* SUMA\n*9* Flash Mobile",
+        "timeout": "10800"
+      }
+    },
+    {
+      "name": "espera_30_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_phone_operator",
+          "event": "success"
+        },
+        {
+          "next": "split_phone_operator",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -820,
+          "y": 6060
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "split_phone_operator",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "counter_error_phone_operator",
+          "event": "noMatch"
+        },
+        {
+          "next": "set_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "1",
+              "arguments": [
+                "{{widgets.phone_operator.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*1*,*1.*,1, 1,1 ,1."
+            }
+          ]
+        },
+        {
+          "next": "set_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "2",
+              "arguments": [
+                "{{widgets.phone_operator.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*2*,*2.*,2, 2,2 ,2."
+            }
+          ]
+        },
+        {
+          "next": "set_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "3",
+              "arguments": [
+                "{{widgets.phone_operator.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*3*,*3.*,3, 3,3 ,3."
+            }
+          ]
+        },
+        {
+          "next": "set_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "4",
+              "arguments": [
+                "{{widgets.phone_operator.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*4*,*4.*,4, 4,4 ,4."
+            }
+          ]
+        },
+        {
+          "next": "set_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "5",
+              "arguments": [
+                "{{widgets.phone_operator.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*5*,*5.*,5, 5,5 ,5."
+            }
+          ]
+        },
+        {
+          "next": "set_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "6",
+              "arguments": [
+                "{{widgets.phone_operator.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*6*,*6.*,6, 6,6 ,6."
+            }
+          ]
+        },
+        {
+          "next": "set_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "7",
+              "arguments": [
+                "{{widgets.phone_operator.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*7*,*7.*,7, 7,7 ,7."
+            }
+          ]
+        },
+        {
+          "next": "set_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "8",
+              "arguments": [
+                "{{widgets.phone_operator.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*8*,*8.*,8, 8,8 ,8."
+            }
+          ]
+        },
+        {
+          "next": "set_complete",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "9",
+              "arguments": [
+                "{{widgets.phone_operator.inbound.Body}}"
+              ],
+              "type": "matches_any_of",
+              "value": "*9*,*9.*,9, 9,9 ,9."
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.phone_operator.inbound.Body}}",
+        "offset": {
+          "x": -500,
+          "y": 6060
+        }
+      }
+    },
+    {
+      "name": "counter_error_phone_operator",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "split_error_phone_operator",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.counter_error_phone_operator -%}\n{{flow.variables.counter_error_phone_operator | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "counter_error_phone_operator"
+          }
+        ],
+        "offset": {
+          "x": -50,
+          "y": 6060
+        }
+      }
+    },
+    {
+      "name": "split_error_phone_operator",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "set_initial_multierror",
+          "event": "noMatch"
+        },
+        {
+          "next": "error_message_phone_operator",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "<4",
+              "arguments": [
+                "{{flow.variables.counter_error_phone_operator}}"
+              ],
+              "type": "less_than",
+              "value": "4"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{flow.variables.counter_error_phone_operator}}",
+        "offset": {
+          "x": 270,
+          "y": 6060
+        }
+      }
+    },
+    {
+      "name": "error_message_phone_operator",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_30_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_30_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 590,
+          "y": 6060
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "No entiendo lo que escribió. \n\nPor favor *digite el número correspondiente* a la opción que desea elegir. \n\nRecuerde que soy un robot 🤖 y no entiendo todo lo que me escribe."
+      }
+    },
+    {
+      "name": "espera_30_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "phone_operator",
+          "event": "success"
+        },
+        {
+          "next": "phone_operator",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 910,
+          "y": 6060
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "set_complete",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "set_time_3",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_complete -%}\n{{flow.variables.set_complete | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_complete"
+          }
+        ],
+        "offset": {
+          "x": -580,
+          "y": 6870
+        }
+      }
+    },
+    {
+      "name": "set_time_3",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "set_time_end",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{{'now' | date: \"%m %d %Z %k %M %S\"}}",
+            "key": "set_time_3"
+          }
+        ],
+        "offset": {
+          "x": -260,
+          "y": 6870
+        }
+      }
+    },
+    {
+      "name": "pre_bye",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_31_a",
+          "event": "sent"
+        },
+        {
+          "next": "espera_31_a",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -810,
+          "y": 7080
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "¡Ha finalizado toda la encuesta! 🍾"
+      }
+    },
+    {
+      "name": "espera_31_a",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "bye_note",
+          "event": "success"
+        },
+        {
+          "next": "bye_note",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": -490,
+          "y": 7080
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "bye_note",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_31_b",
+          "event": "sent"
+        },
+        {
+          "next": "espera_31_b",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -170,
+          "y": 7080
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "Muchas gracias por su tiempo y atención.\n\nNos estaremos comunicando con usted nuevamente en las próximas semanas para enviarle otras 2 encuestas. 👀\n\nNo olvide que para recibir el bono de D1 y la recarga telefónica, debe contestar las siguientes encuestas."
+      }
+    },
+    {
+      "name": "espera_31_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "success"
+        },
+        {
+          "next": "encriptador",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 150,
+          "y": 7080
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "encriptador",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "publish_gsheets",
+          "event": "success"
+        },
+        {
+          "next": "publish_gsheets",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS1161adc18ebc342b09069b3f1bc21ae1",
+        "environment_sid": "ZE2a970e75d41f69acd4a250ef48abdd02",
+        "offset": {
+          "x": 620,
+          "y": 7350
+        },
+        "function_sid": "ZH2bcfa71f468d237313d4b6a1cdd026c2",
+        "parameters": [
+          {
+            "value": "{{flow.data.name}}",
+            "key": "name"
+          },
+          {
+            "value": "{{flow.data.year}}",
+            "key": "year"
+          },
+          {
+            "value": "{{flow.data.month}}",
+            "key": "month"
+          },
+          {
+            "value": "{{flow.data.Number}}",
+            "key": "Number"
+          },
+          {
+            "value": "{{widgets.verif_6.inbound.Body}}",
+            "key": "verif_6"
+          },
+          {
+            "value": "{{widgets.verif_dob_1.inbound.Body}}",
+            "key": "verif_dob_1"
+          },
+          {
+            "value": "{{widgets.verif_dob_1_err1.inbound.Body}}",
+            "key": "verif_dob_1_err1"
+          },
+          {
+            "value": "{{widgets.verif_dob_2.inbound.Body}}",
+            "key": "verif_dob_2"
+          },
+          {
+            "value": "{{widgets.verif_dob_2_err1.inbound.Body}}",
+            "key": "verif_dob_2_err1"
+          },
+          {
+            "value": "{{flow.data.p_number_original}}",
+            "key": "p_number_original"
+          },
+          {
+            "value": "{{widgets.phone_2_1.inbound.Body}}",
+            "key": "phone_2_1"
+          },
+          {
+            "value": "{{widgets.phone_2_3.inbound.Body}}",
+            "key": "phone_2_3"
+          }
+        ],
+        "url": "https://encrypt-9407.twil.io/encrypter"
+      }
+    },
+    {
+      "name": "publish_gsheets",
+      "type": "run-function",
+      "transitions": [
+        {
+          "event": "success"
+        },
+        {
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS053871786432fff117f2d08de5c96388",
+        "environment_sid": "ZEc420fc41eaf204f45a4f1269e46ee4ff",
+        "offset": {
+          "x": 670,
+          "y": 7810
+        },
+        "function_sid": "ZH410481454e8802f7081a11894549d1f0",
+        "parameters": [
+          {
+            "value": "{{flow.data.caseid}}",
+            "key": "caseid"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_name}}",
+            "key": "enc_name"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_year}}",
+            "key": "enc_year"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_month}}",
+            "key": "enc_month"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_Number}}",
+            "key": "enc_Number"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_verif_6}}",
+            "key": "enc_verif_6"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_verif_dob_1}}",
+            "key": "enc_verif_dob_1"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_verif_dob_1_err1}}",
+            "key": "enc_verif_dob_1_err1"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_verif_dob_2}}",
+            "key": "enc_verif_dob_2"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_verif_dob_2_err1}}",
+            "key": "enc_verif_dob_2_err1"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_p_number_original}}",
+            "key": "enc_p_number_original"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_phone_2_1}}",
+            "key": "enc_phone_2_1"
+          },
+          {
+            "value": "{{widgets.encriptador.parsed.enc_phone_2_3}}",
+            "key": "enc_phone_2_3"
+          },
+          {
+            "value": "{{flow.variables.set_intro_fail}}",
+            "key": "set_intro_fail"
+          },
+          {
+            "value": "{{flow.variables.set_intro_no_reply}}",
+            "key": "set_intro_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_intro_multierror}}",
+            "key": "set_intro_multierror"
+          },
+          {
+            "value": "{{flow.variables.set_initial_multierror}}",
+            "key": "set_initial_multierror"
+          },
+          {
+            "value": "{{flow.variables.set_initial_fail}}",
+            "key": "set_initial_fail"
+          },
+          {
+            "value": "{{flow.variables.set_initial_reply}}",
+            "key": "set_initial_no_reply"
+          },
+          {
+            "value": "{{flow.variables.set_time_1}}",
+            "key": "set_time_1"
+          },
+          {
+            "value": "{{flow.variables.set_time_consent}}",
+            "key": "set_time_consent"
+          },
+          {
+            "value": "{{flow.variables.set_time_3}}",
+            "key": "set_time_3"
+          },
+          {
+            "value": "{{widgets.verif_1.inbound.Body}}",
+            "key": "verif_1"
+          },
+          {
+            "value": "{{widgets.verif_1_reminder.inbound.Body}}",
+            "key": "verif_1_reminder"
+          },
+          {
+            "value": "{{widgets.verif_2.inbound.Body}}",
+            "key": "verif_2"
+          },
+          {
+            "value": "{{widgets.verif_3.inbound.Body}}",
+            "key": "verif_3"
+          },
+          {
+            "value": "{{widgets.verif_4.inbound.Body}}",
+            "key": "verif_4"
+          },
+          {
+            "value": "{{widgets.verif_5.inbound.Body}}",
+            "key": "verif_5"
+          },
+          {
+            "value": "{{widgets.consent.inbound.Body}}",
+            "key": "consent"
+          },
+          {
+            "value": "{{widgets.phone_1.inbound.Body}}",
+            "key": "phone_1"
+          },
+          {
+            "value": "{{widgets.phone_2.inbound.Body}}",
+            "key": "phone_2"
+          },
+          {
+            "value": "{{widgets.phone_2_2.inbound.Body}}",
+            "key": "phone_2_2"
+          },
+          {
+            "value": "{{widgets.phone_2_4.inbound.Body}}",
+            "key": "phone_2_4"
+          },
+          {
+            "value": "{{widgets.phone_operator.inbound.Body}}",
+            "key": "phone_operator"
+          },
+          {
+            "value": "{{flow.variables.set_complete}}",
+            "key": "set_complete"
+          },
+          {
+            "value": "{{flow.variables.set_verif_complete}}",
+            "key": "set_verif_complete"
+          },
+          {
+            "value": "{{flow.variables.set_verif_wrong}}",
+            "key": "set_verif_wrong"
+          },
+          {
+            "value": "{{flow.data.sexo}}",
+            "key": "sexo"
+          },
+          {
+            "value": "{{flow.data.edad}}",
+            "key": "edad"
+          },
+          {
+            "value": "{{flow.data.grupo}}",
+            "key": "grupo"
+          },
+          {
+            "value": "{{flow.data.niv_educativo_sisben}}",
+            "key": "niv_educativo_sisben"
+          },
+          {
+            "value": "{{flow.data.metr_area_name}}",
+            "key": "metr_area_name"
+          },
+          {
+            "value": "{{flow.data.nationality}}",
+            "key": "nationality"
+          },
+          {
+            "value": "{{flow.variables.set_time_2}}",
+            "key": "set_time_2"
+          },
+          {
+            "value": "{{flow.variables.set_time_start}}",
+            "key": "set_time_start"
+          },
+          {
+            "value": "{{flow.variables.set_time_end}}",
+            "key": "set_time_end"
+          },
+          {
+            "value": "{{flow.data.console}}",
+            "key": "console"
+          },
+          {
+            "value": "{{flow.variables.set_reminder_fail}}",
+            "key": "set_reminder_fail"
+          },
+          {
+            "value": "{{flow.variables.set_reminder_multierror}}",
+            "key": "set_reminder_multierror"
+          }
+        ],
+        "url": "https://publish-function-7867.twil.io/publish_screening"
+      }
+    },
+    {
+      "name": "bye_note_4",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "encriptador",
+          "event": "sent"
+        },
+        {
+          "next": "encriptador",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1900,
+          "y": 7080
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "Lastimosamente necesitamos contactarle a un número que tenga Whatsapp. Por lo tanto, no podrá participar en este estudio. \n\nMuchas gracias por su tiempo y atención. Que tenga un excelente resto de día.\n\nIPA Colombia"
+      }
+    },
+    {
+      "name": "bye_note_multierror",
+      "type": "send-message",
+      "transitions": [
+        {
+          "next": "espera_multierror_1",
+          "event": "sent"
+        },
+        {
+          "next": "espera_multierror_1",
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 3340,
+          "y": 2160
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "to": "{{contact.channel.address}}",
+        "body": "Parece que no entendemos sus respuestas. Por ahora, vamos a cerrar esta encuesta y alguien del equipo de investigación se pondrá en contacto con usted."
+      }
+    },
+    {
+      "name": "espera_multierror",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "bye_note_multierror",
+          "event": "success"
+        },
+        {
+          "next": "bye_note_multierror",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 3340,
+          "y": 1970
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "espera_multierror_1",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "bye_note_3",
+          "event": "success"
+        },
+        {
+          "next": "bye_note_3",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 3340,
+          "y": 2370
+        },
+        "function_sid": "ZH35deae7bf46440eb734102eb09406742",
+        "url": "https://aletorio-1295.twil.io/short_wait"
+      }
+    },
+    {
+      "name": "espera_21_b",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "consent",
+          "event": "success"
+        },
+        {
+          "next": "consent",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS98a61cbdd0f43c6a1151754946c0de78",
+        "environment_sid": "ZEba4e92cdd7575a97a3846322a188d18b",
+        "offset": {
+          "x": 450,
+          "y": 3870
+        },
+        "function_sid": "ZHc4579d2e257656e700137f1c4928e1d6",
+        "url": "https://aletorio-1295.twil.io/15sec_wait"
+      }
+    },
+    {
+      "name": "set_time_start",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "welcome_2",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{{'now' | date: \"%k %M %S\"}}",
+            "key": "set_time_start"
+          }
+        ],
+        "offset": {
+          "x": 690,
+          "y": -660
+        }
+      }
+    },
+    {
+      "name": "set_time_consent",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "phone_1",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{{'now' | date: \"%k %M %S\"}}",
+            "key": "set_time_consent"
+          }
+        ],
+        "offset": {
+          "x": 410,
+          "y": 4490
+        }
+      }
+    },
+    {
+      "name": "set_time_end",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "pre_bye",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{{'now' | date: \"%k %M %S\"}}",
+            "key": "set_time_end"
+          }
+        ],
+        "offset": {
+          "x": 60,
+          "y": 6870
+        }
+      }
+    },
+    {
+      "name": "set_reminder_fail",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_err_a",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reminder_fail -%}\n{{flow.variables.set_reminder_fail | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_reminder_fail"
+          }
+        ],
+        "offset": {
+          "x": 2920,
+          "y": 180
+        }
+      }
+    },
+    {
+      "name": "set_reminder_multierror",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "espera_multierror",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{%- if flow.variables.set_reminder_multierror -%}\n{{flow.variables.set_reminder_multierror | plus: 1}}\n{%- else -%}\n1\n{%- endif -%}",
+            "key": "set_reminder_multierror"
+          }
+        ],
+        "offset": {
+          "x": 2920,
+          "y": 350
+        }
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
